@@ -25,32 +25,35 @@ function App() {
         },
         (error) => {
           console.warn(`Platstjänster fel: ${error.message}. Använder standard (Trosa).`);
-          connectWebSocket(DEFAULT_LAT, DEFAULT_LON);
+          // location is already Trosa, so second useEffect will handle it
         },
         { timeout: 10000 }
       );
-    } else {
-      connectWebSocket(DEFAULT_LAT, DEFAULT_LON);
     }
   }, []);
 
   useEffect(() => {
-    if (location.lat !== DEFAULT_LAT || location.lon !== DEFAULT_LON) {
-      connectWebSocket(location.lat, location.lon);
-    } else if (location.lat === DEFAULT_LAT && location.lon === DEFAULT_LON && loading) {
-       connectWebSocket(DEFAULT_LAT, DEFAULT_LON);
-    }
+    // Only connect when location is set, avoiding double calls on mount
+    connectWebSocket(location.lat, location.lon, true);
     
     return () => {
       if (ws.current) {
+        // Ta bort onclose tillfälligt för att undvika reconnect-loop när vi stänger medvetet
+        ws.current.onclose = null;
         ws.current.close();
       }
     };
   }, [location.lat, location.lon]);
 
-  const connectWebSocket = (lat, lon) => {
-    if (ws.current) ws.current.close();
-    setLoading(true);
+  const connectWebSocket = (lat, lon, isInitial = false) => {
+    if (ws.current) {
+      ws.current.onclose = null;
+      ws.current.close();
+    }
+    
+    if (isInitial && !weatherData) {
+      setLoading(true);
+    }
     
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
@@ -79,7 +82,7 @@ function App() {
     ws.current.onclose = () => {
       console.warn("WebSocket stängd, försöker återansluta om 5 sek...");
       setTimeout(() => {
-        connectWebSocket(lat, lon);
+        connectWebSocket(lat, lon, false);
       }, 5000);
     };
   };
