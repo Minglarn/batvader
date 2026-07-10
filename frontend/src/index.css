@@ -417,3 +417,71 @@ h1 {
 .slide-prev {
   animation: slideInLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
+
+/* Weather Icon & Header Layout */
+.weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.weather-header .temp-large {
+  margin: 0;
+}
+
+.weather-icon-container {
+  width: 120px;
+  height: 120px;
+  filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.2));
+}
+
+@media (min-width: 768px) {
+  .weather-icon-container {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+/* SVG Micro Animations */
+.anim-spin-slow {
+  animation: svg-spin 20s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.anim-float {
+  animation: svg-float 4s ease-in-out infinite;
+}
+
+.anim-rain {
+  animation: svg-fall 0.8s linear infinite;
+}
+
+.anim-snow {
+  animation: svg-fall 3s linear infinite;
+}
+
+.anim-flash {
+  animation: svg-flash 5s infinite;
+}
+
+@keyframes svg-spin {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes svg-float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes svg-fall {
+  0% { transform: translateY(-10px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(20px); opacity: 0; }
+}
+
+@keyframes svg-flash {
+  0%, 90%, 94%, 98% { opacity: 0; }
+  92%, 96%, 100% { opacity: 1; }
+}

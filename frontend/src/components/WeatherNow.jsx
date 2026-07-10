@@ -1,4 +1,5 @@
 import React from 'react';
+import WeatherIcon from './WeatherIcon';
 
 function WeatherNow({ data }) {
   if (!data || data.error) return <h1>INGEN DATA TILLGÄNGLIG</h1>;
@@ -21,6 +22,7 @@ function WeatherNow({ data }) {
   const precip = getParam('precipitation_amount_mean');
   const humidity = getParam('relative_humidity');
   const thunder = getParam('thunderstorm_probability');
+  const symbolCode = getParam('symbol_code');
 
   const getWindDirection = (deg) => {
     if (deg === '-') return '-';
@@ -31,7 +33,12 @@ function WeatherNow({ data }) {
   
   return (
     <div>
-      <div className="temp-large">{temp}°C</div>
+      <div className="weather-header">
+        <div className="temp-large">{temp}°C</div>
+        <div className="weather-icon-container">
+          <WeatherIcon symbolCode={symbolCode} />
+        </div>
+      </div>
       <div className="info-grid">
         <div className="info-card">
           <div className="info-card-title">Vind (m/s)</div>
