@@ -49,25 +49,24 @@ const menuIcon = (
 );
 
 function Sidebar({ activeTab, setActiveTab }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(() => {
+    if (window.innerWidth < 768) return false;
+    const saved = localStorage.getItem('sidebarOpen');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
   const tabs = ['NU', 'DETALJERAT', 'PROGNOS', 'INSTÄLLNINGAR'];
 
-  useEffect(() => {
-    const checkWidth = () => {
-      if (window.innerWidth < 768) {
-        setIsOpen(false);
-      } else {
-        setIsOpen(true);
-      }
-    };
-    checkWidth();
-    window.addEventListener('resize', checkWidth);
-    return () => window.removeEventListener('resize', checkWidth);
-  }, []);
+  const toggleSidebar = () => {
+    const newState = !isOpen;
+    setIsOpen(newState);
+    if (window.innerWidth >= 768) {
+      localStorage.setItem('sidebarOpen', JSON.stringify(newState));
+    }
+  };
 
   return (
     <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-      <button className="toggle-btn" onClick={() => setIsOpen(!isOpen)} title={isOpen ? 'Dölj meny' : 'Visa meny'}>
+      <button className="toggle-btn" onClick={toggleSidebar} title={isOpen ? 'Dölj meny' : 'Visa meny'}>
         <span className="icon">{menuIcon}</span>
         <span className="text">{isOpen ? 'DÖLJ' : ''}</span>
       </button>
