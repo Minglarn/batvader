@@ -92,7 +92,7 @@ function WeatherForecast({ data }) {
               <div className="info-card-title">{timeStr}</div>
               
               <div style={{ marginTop: '15px', marginBottom: '15px', width: '50px', height: '50px' }}>
-                <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} />
+                <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={hour.time} />
               </div>
               
               <div className="info-card-value" style={{ marginTop: 'auto', color: getTempColor(temp), fontSize: '2rem' }}>

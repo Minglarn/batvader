@@ -100,7 +100,7 @@ function WeatherNow({ data }) {
           </div>
         </div>
         <div className="weather-icon-container">
-          <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} />
+          <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={data.timeSeries[0].time} />
         </div>
       </div>
       <div className="info-grid">

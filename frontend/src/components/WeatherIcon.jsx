@@ -7,7 +7,7 @@ import React from 'react';
 // 11, 21: Thunder
 // 12-17, 22-27: Snow
 
-const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
+const WeatherIcon = ({ symbolCode, windSpeed, windDir, time }) => {
   const code = parseInt(symbolCode, 10);
   
   if (isNaN(code)) {
@@ -74,7 +74,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
     );
   };
 
-  const currentHour = new Date().getHours();
+  const currentHour = time ? new Date(time).getHours() : new Date().getHours();
   const isNight = currentHour >= 22 || currentHour <= 4;
   let weatherSvg = null;
 
