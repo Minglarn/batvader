@@ -24,14 +24,17 @@ def fetch_weather_data(lat: float, lon: float):
     ocean_url = f"https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat={lat}&lon={lon}"
     
     smhi_data = None
+    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: SMHI API för koordinater {lat_str}, {lon_str}...")
     try:
         response = requests.get(smhi_url, timeout=10)
         response.raise_for_status()
         smhi_data = response.json()
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SMHI data hämtad.")
     except Exception as e:
-        print(f"Error fetching data from SMHI: {e}")
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta från SMHI: {e}")
         return None
         
+    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: MET Norway Oceanforecast för koordinater {lat_str}, {lon_str}...")
     try:
         headers = {"User-Agent": "BatVader/1.0 github.com/Minglarn/batvader"}
         res = requests.get(ocean_url, headers=headers, timeout=10)
@@ -45,8 +48,9 @@ def fetch_weather_data(lat: float, lon: float):
             smhi_data["timeSeries"][0]["data"]["ocean_wave_direction"] = details.get("sea_surface_wave_from_direction", "-")
             smhi_data["timeSeries"][0]["data"]["ocean_velocity"] = details.get("sea_water_speed", "-")
             smhi_data["timeSeries"][0]["data"]["ocean_direction"] = details.get("sea_water_to_direction", "-")
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: MET Norway data hämtad och inbakad.")
     except Exception as e:
-        print(f"Error fetching ocean data from MET Norway: {e}")
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta ocean data från MET Norway: {e}")
         
     return smhi_data
 
