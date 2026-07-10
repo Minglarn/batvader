@@ -1,7 +1,7 @@
 import React from 'react';
 import WeatherIcon from './WeatherIcon';
 
-function WeatherNow({ data }) {
+function WeatherNow({ data, location }) {
   if (!data || data.error) return <h1>INGEN DATA TILLGÄNGLIG</h1>;
   
   const getParam = (name) => {
@@ -100,7 +100,7 @@ function WeatherNow({ data }) {
           </div>
         </div>
         <div className="weather-icon-container">
-          <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={data.timeSeries[0].time} />
+          <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={data.timeSeries[0].time} lat={location?.lat} lon={location?.lon} />
         </div>
       </div>
       <div className="info-grid">

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import WeatherNow from './WeatherNow';
 
-function WeatherDetailed({ data }) {
+function WeatherDetailed({ data, location }) {
   const [selectedHourIndex, setSelectedHourIndex] = useState(0);
   const [slideDirection, setSlideDirection] = useState(null);
   const touchStartX = useRef(null);
@@ -89,7 +89,7 @@ function WeatherDetailed({ data }) {
         className={slideDirection ? `slide-${slideDirection}` : ''}
         style={{ flexGrow: 1 }}
       >
-        <WeatherNow data={{ timeSeries: [currentData] }} />
+        <WeatherNow data={{ timeSeries: [currentData] }} location={location} />
       </div>
     </div>
   );

@@ -206,9 +206,9 @@ function App() {
           <h1 style={{textAlign: 'center', marginTop: '20vh'}}>LADDAR DATA...</h1>
         ) : (
           <>
-            {activeTab === 'NU' && <WeatherNow data={weatherData} />}
-            {activeTab === 'DETALJERAT' && <WeatherDetailed data={weatherData} />}
-            {activeTab === 'PROGNOS' && <WeatherForecast data={weatherData} />}
+            {activeTab === 'NU' && <WeatherNow data={weatherData} location={location} />}
+            {activeTab === 'DETALJERAT' && <WeatherDetailed data={weatherData} location={location} />}
+            {activeTab === 'PROGNOS' && <WeatherForecast data={weatherData} location={location} />}
             {activeTab === 'INSTÄLLNINGAR' && <Settings theme={theme} setTheme={setTheme} />}
             <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem' }}>
               Väderdata: SMHI | Havsdata: MET Norway

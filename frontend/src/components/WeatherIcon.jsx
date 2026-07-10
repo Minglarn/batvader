@@ -1,4 +1,5 @@
 import React from 'react';
+import SunCalc from 'suncalc';
 
 // SMHI Wsymb2 code mapping:
 // 1-3: Clear / Sun
@@ -7,7 +8,7 @@ import React from 'react';
 // 11, 21: Thunder
 // 12-17, 22-27: Snow
 
-const WeatherIcon = ({ symbolCode, windSpeed, windDir, time }) => {
+const WeatherIcon = ({ symbolCode, windSpeed, windDir, time, lat, lon }) => {
   const code = parseInt(symbolCode, 10);
   
   if (isNaN(code)) {
@@ -74,8 +75,16 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir, time }) => {
     );
   };
 
-  const currentHour = time ? new Date(time).getHours() : new Date().getHours();
-  const isNight = currentHour >= 22 || currentHour <= 4;
+  let isNight = false;
+  if (time && lat && lon) {
+    const date = new Date(time);
+    const times = SunCalc.getTimes(date, lat, lon);
+    isNight = date < times.sunrise || date > times.sunset;
+  } else {
+    const currentHour = time ? new Date(time).getHours() : new Date().getHours();
+    isNight = currentHour >= 22 || currentHour <= 4;
+  }
+
   let weatherSvg = null;
 
   // 1-3: Sun or Moon

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import WeatherIcon from './WeatherIcon';
 import WeatherNow from './WeatherNow';
 
-function WeatherForecast({ data }) {
+function WeatherForecast({ data, location }) {
   const [selectedHour, setSelectedHour] = useState(null);
   const [page, setPage] = useState(0);
 
@@ -92,7 +92,7 @@ function WeatherForecast({ data }) {
               <div className="info-card-title">{timeStr}</div>
               
               <div style={{ marginTop: '15px', marginBottom: '15px', width: '50px', height: '50px' }}>
-                <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={hour.time} />
+                <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={hour.time} lat={location?.lat} lon={location?.lon} />
               </div>
               
               <div className="info-card-value" style={{ marginTop: 'auto', color: getTempColor(temp), fontSize: '2rem' }}>
@@ -154,7 +154,7 @@ function WeatherForecast({ data }) {
             <h2 style={{marginTop: 0, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center'}}>
               {new Date(selectedHour.time).toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}
             </h2>
-            <WeatherNow data={{ timeSeries: [selectedHour], referenceTime: data.referenceTime }} />
+            <WeatherNow data={{ timeSeries: [selectedHour], referenceTime: data.referenceTime }} location={location} />
           </div>
         </div>
       )}
