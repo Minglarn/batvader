@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './components/Sidebar';
 import { getWeatherData } from './services/api';
 
@@ -58,9 +58,10 @@ function App() {
   // Pull to refresh logik
   const [startY, setStartY] = useState(null);
   const [pullDist, setPullDist] = useState(0);
+  const mainContentRef = useRef(null);
 
   const handleTouchStart = (e) => {
-    if (window.scrollY === 0) {
+    if (mainContentRef.current && mainContentRef.current.scrollTop === 0) {
       setStartY(e.touches[0].clientY);
     }
   };
@@ -103,6 +104,7 @@ function App() {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        ref={mainContentRef}
       >
         {pullDist > 0 && (
           <div style={{ textAlign: 'center', color: 'var(--accent)', height: `${pullDist}px`, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
