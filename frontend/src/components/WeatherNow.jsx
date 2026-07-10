@@ -23,6 +23,11 @@ function WeatherNow({ data }) {
   const humidity = getParam('relative_humidity');
   const thunder = getParam('thunderstorm_probability');
   const symbolCode = getParam('symbol_code');
+  
+  // Ocean data
+  const waveHeight = getParam('ocean_wave_height');
+  const oceanVelocity = getParam('ocean_velocity');
+  const oceanDirection = getParam('ocean_direction');
 
   const getWindDirection = (deg) => {
     if (deg === '-') return '-';
@@ -53,7 +58,7 @@ function WeatherNow({ data }) {
       <div className="weather-header">
         <div className="temp-large">{temp}°C</div>
         <div className="weather-icon-container">
-          <WeatherIcon symbolCode={symbolCode} />
+          <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} />
         </div>
       </div>
       <div className="info-grid">
@@ -83,7 +88,7 @@ function WeatherNow({ data }) {
           <div className="info-card-value" style={{marginTop: 'auto'}}>
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="16 12 12 8 8 12"></polyline><line x1="12" y1="16" x2="12" y2="8"></line></svg>
           </div>
-          <div className="info-card-subtext">0.6 m</div>
+          <div className="info-card-subtext">{waveHeight !== '-' ? `${waveHeight} m` : '-'}</div>
         </div>
         
         <div className="info-card">
@@ -105,9 +110,9 @@ function WeatherNow({ data }) {
         <div className="info-card">
           <div className="info-card-title">Ström</div>
           <div className="info-card-value" style={{marginTop: 'auto'}}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg>
+            <span style={{display: 'inline-block', transform: `rotate(${oceanDirection !== '-' ? oceanDirection : 0}deg)`}}>↓</span>
           </div>
-          <div className="info-card-subtext">0.6 knop</div>
+          <div className="info-card-subtext">{oceanVelocity !== '-' ? `${oceanVelocity} km/h` : '-'}</div>
         </div>
 
         <div className="info-card">

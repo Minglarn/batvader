@@ -17,18 +17,35 @@ DEFAULT_LON = 17.5504
 
 watched_locations = {(DEFAULT_LAT, DEFAULT_LON)}
 
-def fetch_smhi_data(lat: float, lon: float):
+def fetch_weather_data(lat: float, lon: float):
     lat_str = f"{lat:.4f}"
     lon_str = f"{lon:.4f}"
-    url = f"https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/{lon_str}/lat/{lat_str}/data.json"
+    smhi_url = f"https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/{lon_str}/lat/{lat_str}/data.json"
+    ocean_url = f"https://marine-api.open-meteo.com/v1/marine?latitude={lat}&longitude={lon}&current=wave_height,ocean_current_velocity,ocean_current_direction"
     
+    smhi_data = None
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(smhi_url, timeout=10)
         response.raise_for_status()
-        return response.json()
+        smhi_data = response.json()
     except Exception as e:
         print(f"Error fetching data from SMHI: {e}")
         return None
+        
+    try:
+        res = requests.get(ocean_url, timeout=10)
+        res.raise_for_status()
+        ocean_data = res.json()
+        if "current" in ocean_data:
+            c = ocean_data["current"]
+            # Baka in ocean_data direkt i SMHI's första TimeSeries objekt!
+            smhi_data["timeSeries"][0]["data"]["ocean_wave_height"] = c.get("wave_height", "-")
+            smhi_data["timeSeries"][0]["data"]["ocean_velocity"] = c.get("ocean_current_velocity", "-")
+            smhi_data["timeSeries"][0]["data"]["ocean_direction"] = c.get("ocean_current_direction", "-")
+    except Exception as e:
+        print(f"Error fetching ocean data: {e}")
+        
+    return smhi_data
 
 class ConnectionManager:
     def __init__(self):
@@ -55,7 +72,7 @@ async def update_weather_job():
     print(f"[{datetime.datetime.now()}] Running background job to fetch weather...")
     db = SessionLocal()
     for lat, lon in watched_locations:
-        data = fetch_smhi_data(lat, lon)
+        data = fetch_weather_data(lat, lon)
         if data:
             weather_record = models.WeatherData(
                 latitude=lat,
@@ -128,7 +145,7 @@ async def websocket_endpoint(websocket: WebSocket, lat: float = DEFAULT_LAT, lon
                 
         if not is_watched:
             watched_locations.add((lat, lon))
-            data = fetch_smhi_data(lat, lon)
+            data = fetch_weather_data(lat, lon)
             if data:
                 weather_record = models.WeatherData(
                     latitude=lat,
@@ -179,7 +196,7 @@ def get_weather(lat: float = DEFAULT_LAT, lon: float = DEFAULT_LON, db: Session 
             
     if not is_watched:
         watched_locations.add((lat, lon))
-        data = fetch_smhi_data(lat, lon)
+        data = fetch_weather_data(lat, lon)
         if data:
             weather_record = models.WeatherData(
                 latitude=lat,
