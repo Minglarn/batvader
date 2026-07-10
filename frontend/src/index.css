@@ -153,10 +153,6 @@ body {
   .sidebar-links {
     flex-direction: column;
   }
-
-  .sidebar.closed .sidebar-links {
-    display: none;
-  }
   
   .toggle-btn {
     display: flex;
