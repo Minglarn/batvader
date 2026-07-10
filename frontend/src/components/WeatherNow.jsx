@@ -27,8 +27,25 @@ function WeatherNow({ data }) {
   const getWindDirection = (deg) => {
     if (deg === '-') return '-';
     const val = Math.floor((deg / 22.5) + 0.5);
-    const arr = ["N", "NNO", "NO", "ONO", "O", "OSO", "SO", "SSO", "S", "SSV", "SV", "VSV", "V", "VNV", "NV", "NNV"];
+    const arr = ["Nord", "Nordost", "Nordost", "Ostan", "Ost", "Sydost", "Sydost", "Syd", "Syd", "Sydväst", "Sydväst", "Västan", "Väst", "Nordväst", "Nordväst", "Nord"];
     return arr[(val % 16)];
+  };
+  
+  const getBeaufortScale = (ms) => {
+    if (ms === '-') return '-';
+    const w = parseFloat(ms);
+    if (w < 0.3) return 'Lugnt';
+    if (w < 1.6) return 'Svag vind';
+    if (w < 3.4) return 'Lätt bris';
+    if (w < 5.5) return 'God bris';
+    if (w < 8.0) return 'Frisk bris';
+    if (w < 10.8) return 'Styv bris';
+    if (w < 13.9) return 'Hård bris';
+    if (w < 17.2) return 'Styv kuling';
+    if (w < 20.8) return 'Hård kuling';
+    if (w < 24.5) return 'Halv storm';
+    if (w < 28.5) return 'Storm';
+    return 'Orkan';
   };
   
   return (
@@ -41,37 +58,77 @@ function WeatherNow({ data }) {
       </div>
       <div className="info-grid">
         <div className="info-card">
-          <div className="info-card-title">Vind (m/s)</div>
-          <div className="info-card-value">{wind}</div>
+          <div className="info-card-title">Vindhastighet<br/>och riktning</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>
+            {wind}<span style={{fontSize: '1rem'}}>m/s</span> 
+            <span style={{display: 'inline-block', transform: `rotate(${windDirDeg !== '-' ? windDirDeg : 0}deg)`, marginLeft: '10px'}}>↓</span>
+          </div>
+          <div className="info-card-subtext">{getBeaufortScale(wind)}<br/>från {getWindDirection(windDirDeg)}</div>
         </div>
+        
         <div className="info-card">
-          <div className="info-card-title">Byvind (m/s)</div>
-          <div className="info-card-value">{gust}</div>
+          <div className="info-card-title">Byvind</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>{gust}<span style={{fontSize: '1rem'}}>m/s</span></div>
+          <div className="info-card-subtext">{getBeaufortScale(gust)}</div>
         </div>
+        
         <div className="info-card">
-          <div className="info-card-title">Riktning</div>
-          <div className="info-card-value">{getWindDirection(windDirDeg)}</div>
+          <div className="info-card-title">Nederbörd</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>{precip}<span style={{fontSize: '1rem'}}>mm</span></div>
+          <div className="info-card-subtext">{precip > 0 ? 'Regn' : 'Uppehåll'}</div>
         </div>
+        
         <div className="info-card">
-          <div className="info-card-title">Lufttryck (hPa)</div>
-          <div className="info-card-value">{pressure}</div>
+          <div className="info-card-title">Vågor</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="16 12 12 8 8 12"></polyline><line x1="12" y1="16" x2="12" y2="8"></line></svg>
+          </div>
+          <div className="info-card-subtext">0.6 m</div>
         </div>
+        
         <div className="info-card">
-          <div className="info-card-title">Sikt (km)</div>
-          <div className="info-card-value">{visibility}</div>
+          <div className="info-card-title">Lufttryck</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+          <div className="info-card-subtext">{pressure} hPa</div>
         </div>
+
         <div className="info-card">
-          <div className="info-card-title">Nederbörd (mm)</div>
-          <div className="info-card-value">{precip}</div>
+          <div className="info-card-title">Vattentemp</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>15°C</div>
         </div>
+
         <div className="info-card">
-          <div className="info-card-title">Åskrisk (%)</div>
-          <div className="info-card-value">{thunder}</div>
+          <div className="info-card-title">Ström</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg>
+          </div>
+          <div className="info-card-subtext">0.6 knop</div>
         </div>
+
         <div className="info-card">
-          <div className="info-card-title">Luftfuktighet (%)</div>
-          <div className="info-card-value">{humidity}</div>
+          <div className="info-card-title">Risk för åska</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>
+             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path><polyline points="13 14 11 18 14 18 12 22"></polyline></svg>
+          </div>
+          <div className="info-card-subtext">{thunder} %</div>
         </div>
+
+        <div className="info-card">
+          <div className="info-card-title">Sikt</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>{visibility}<span style={{fontSize: '1rem'}}>km</span></div>
+          <div className="info-card-subtext">{visibility > 10 ? 'Mycket god sikt' : 'Dålig sikt'}</div>
+        </div>
+
+        <div className="info-card">
+          <div className="info-card-title">Vattenstånd</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h20M12 2v10M8 6l4-4 4 4M2 18s2-2 4-2 4 2 4 2 4-2 4-2M2 22s2-2 4-2 4 2 4 2 4-2 4-2"></path></svg>
+          </div>
+          <div className="info-card-subtext">32.6 cm</div>
+        </div>
+
       </div>
     </div>
   );
