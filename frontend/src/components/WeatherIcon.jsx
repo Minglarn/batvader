@@ -15,22 +15,27 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   }
 
   const renderWindArrows = () => {
-    if (windSpeed === undefined || windSpeed === '-' || isNaN(windSpeed) || windSpeed < 3.4) return null;
+    if (windSpeed === undefined || windSpeed === '-' || isNaN(windSpeed) || windSpeed <= 0) return null;
     
     // Wind direction is "from", meaning wind coming from 90 (East) blows to 270 (West).
     // An arrow pointing right (0 deg) in SVG should be rotated by windDir - 90.
     const dir = parseInt(windDir, 10);
     const rotation = !isNaN(dir) ? dir - 90 : 0; 
     
-    let numArrows = 0;
-    let color = "rgba(255, 255, 255, 0.7)";
-    let animSpeed = "1.5s";
+    let numArrows = 1;
+    let color = "rgba(255, 255, 255, 0.4)";
+    let animSpeed = "2.5s";
 
-    if (windSpeed >= 3.4 && windSpeed < 8.0) {
+    if (windSpeed < 3.4) {
+      // Svag vind
+      numArrows = 1;
+      color = "rgba(255, 255, 255, 0.4)";
+      animSpeed = "2.5s";
+    } else if (windSpeed >= 3.4 && windSpeed < 8.0) {
       // Måttlig vind
       numArrows = 2;
       color = "rgba(255, 255, 255, 0.8)";
-      animSpeed = "1.2s";
+      animSpeed = "1.5s";
     } else if (windSpeed >= 8.0 && windSpeed < 13.9) {
       // Frisk vind
       numArrows = 3;
