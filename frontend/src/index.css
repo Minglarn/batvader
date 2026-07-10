@@ -1,0 +1,138 @@
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --sidebar-bg: #e0e0e0;
+  --accent: #000000;
+  --border: #000000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --sidebar-bg: #1a1a1a;
+    --accent: #ffffff;
+    --border: #ffffff;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-size: 18px;
+}
+
+#root {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.app-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+.sidebar {
+  display: flex;
+  background-color: var(--sidebar-bg);
+  border-top: 2px solid var(--border);
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+.sidebar-btn {
+  background: none;
+  border: 2px solid transparent;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 15px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.sidebar-btn.active {
+  border-bottom: 4px solid var(--accent);
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .app-container {
+    flex-direction: row;
+  }
+  
+  .sidebar {
+    flex-direction: column;
+    border-top: none;
+    border-right: 2px solid var(--border);
+    justify-content: flex-start;
+    width: 250px;
+    padding: 20px 0;
+  }
+  
+  .sidebar-btn {
+    text-align: left;
+    border-bottom: none;
+    border-left: 6px solid transparent;
+    padding: 20px;
+  }
+  
+  .sidebar-btn.active {
+    border-bottom: none;
+    border-left: 6px solid var(--accent);
+    background-color: rgba(128, 128, 128, 0.2);
+  }
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin: 0 0 20px 0;
+  text-transform: uppercase;
+}
+
+.temp-large {
+  font-size: 6rem;
+  font-weight: bold;
+  line-height: 1;
+  margin: 20px 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.info-card {
+  border: 3px solid var(--border);
+  padding: 20px;
+  text-align: center;
+}
+
+.info-card-title {
+  font-size: 1rem;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.info-card-value {
+  font-size: 2rem;
+  font-weight: bold;
+}
