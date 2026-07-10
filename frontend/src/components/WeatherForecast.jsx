@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import WeatherIcon from './WeatherIcon';
+import WeatherNow from './WeatherNow';
 
 function WeatherForecast({ data }) {
+  const [selectedHour, setSelectedHour] = useState(null);
   if (!data || !data.timeSeries || data.timeSeries.length < 2) {
     return <h1>INGEN PROGNOS TILLGÄNGLIG</h1>;
   }
@@ -43,7 +45,7 @@ function WeatherForecast({ data }) {
       </h2>
       <div className="info-grid">
         {forecastData.map((hour, index) => {
-          const time = new Date(hour.validTime);
+          const time = new Date(hour.time);
           const timeStr = time.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
           const temp = getParam(hour, 'air_temperature');
           const wind = getParam(hour, 'wind_speed');
@@ -53,7 +55,12 @@ function WeatherForecast({ data }) {
           const precip = getParam(hour, 'precipitation_amount_mean');
 
           return (
-            <div key={index} className="info-card" style={{ animationDelay: `${index * 0.05}s` }}>
+            <div 
+              key={index} 
+              className="info-card" 
+              style={{ animationDelay: `${index * 0.05}s`, cursor: 'pointer' }}
+              onClick={() => setSelectedHour(hour)}
+            >
               <div className="info-card-title">{timeStr}</div>
               
               <div style={{ marginTop: '15px', marginBottom: '15px', width: '50px', height: '50px' }}>
@@ -92,6 +99,37 @@ function WeatherForecast({ data }) {
       <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
         Uppdaterat: {data.referenceTime ? new Date(data.referenceTime).toLocaleString('sv-SE') : 'Okänt'}
       </div>
+
+      {selectedHour && (
+        <div className="modal-overlay" style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
+          backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 1000, 
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px', backdropFilter: 'blur(5px)'
+        }} onClick={() => setSelectedHour(null)}>
+          <div className="modal-content" style={{
+            backgroundColor: 'var(--bg-surface)', 
+            borderRadius: '15px', 
+            padding: '20px', 
+            width: '100%', 
+            maxWidth: '1000px',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            border: '1px solid var(--border-color)',
+            position: 'relative'
+          }} onClick={e => e.stopPropagation()}>
+            <button style={{
+              position: 'absolute', top: '15px', right: '15px', 
+              background: 'none', border: 'none', color: 'var(--text-secondary)',
+              fontSize: '2rem', cursor: 'pointer', lineHeight: 1, zIndex: 10
+            }} onClick={() => setSelectedHour(null)}>×</button>
+            <h2 style={{marginTop: 0, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center'}}>
+              {new Date(selectedHour.time).toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}
+            </h2>
+            <WeatherNow data={{ timeSeries: [selectedHour], referenceTime: data.referenceTime }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
