@@ -1,16 +1,14 @@
 version: '3.8'
 services:
   frontend:
-    build:
-      context: ./frontend
+    image: ghcr.io/minglarn/batvader-frontend:latest
     ports:
       - "3000:80"
     depends_on:
       - backend
 
   backend:
-    build:
-      context: ./backend
+    image: ghcr.io/minglarn/batvader-backend:latest
     ports:
       - "8000:8000"
     volumes:
