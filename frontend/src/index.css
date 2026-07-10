@@ -150,6 +150,10 @@ body {
     flex-direction: column;
   }
   
+  .fullscreen-btn {
+    margin-top: auto;
+  }
+  
   .toggle-btn {
     display: flex;
     background: var(--bg-card);

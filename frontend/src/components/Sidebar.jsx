@@ -111,10 +111,9 @@ function Sidebar({ activeTab, setActiveTab }) {
           </button>
         ))}
         <button
-          className="sidebar-btn"
+          className="sidebar-btn fullscreen-btn"
           onClick={toggleFullScreen}
           title={isFullscreen ? 'Stäng fullskärm' : 'Fullskärm'}
-          style={{ marginTop: 'auto' }}
         >
           <span className="icon">{icons.FULLSCREEN}</span>
           <span className="text">{isFullscreen ? 'STÄNG' : 'FULLSKÄRM'}</span>
