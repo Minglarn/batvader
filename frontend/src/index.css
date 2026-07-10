@@ -297,8 +297,10 @@ h1 {
   letter-spacing: 1px;
   margin-bottom: 10px;
   font-weight: 600;
-  white-space: normal;
-  word-wrap: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .info-card-value {
