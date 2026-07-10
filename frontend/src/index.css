@@ -334,6 +334,10 @@ h1 {
   }
 }
 
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
 /* Utility for missing data state */
 .no-data {
   display: flex;

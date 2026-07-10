@@ -85,9 +85,26 @@ function App() {
         onTouchEnd={handleTouchEnd}
         ref={mainContentRef}
       >
-        {pullDist > 0 && (
-          <div style={{ textAlign: 'center', color: 'var(--accent)', height: `${pullDist}px`, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {pullDist > 60 ? 'Släpp för att uppdatera...' : 'Dra neråt...'}
+        {(pullDist > 0 || (loading && weatherData)) && (
+          <div style={{ 
+            height: loading ? '60px' : `${pullDist}px`, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            overflow: 'hidden',
+            color: pullDist > 60 || loading ? 'var(--accent)' : 'var(--text-secondary)',
+            transition: loading ? 'height 0.3s ease' : 'none'
+          }}>
+            <svg 
+              width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              style={{
+                transform: loading ? 'none' : `rotate(${pullDist * 3}deg)`,
+                animation: loading ? 'spin 1s linear infinite' : 'none'
+              }}
+            >
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
           </div>
         )}
         {loading && !weatherData ? (
