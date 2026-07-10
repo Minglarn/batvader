@@ -517,6 +517,7 @@ h1 {
   height: 100%;
   z-index: 0;
   overflow: hidden;
+  opacity: 0.5;
 }
 
 .weather-bg-overlay {
