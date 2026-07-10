@@ -224,7 +224,6 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-      {renderWindArrows()}
       {weatherSvg}
     </div>
   );

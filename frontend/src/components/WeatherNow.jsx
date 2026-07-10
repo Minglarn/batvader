@@ -89,9 +89,15 @@ function WeatherNow({ data }) {
   return (
     <div>
       <div className="weather-header">
-        <div className="temp-large" style={{ color: getTempColor(temp) }}>
-          {isValid(temp) ? `${temp}` : 'N/A'}
-          {isValid(temp) && <span style={{ fontSize: '2rem' }}>°C</span>}
+        <div className="temp-large" style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
+          <div style={{ color: getTempColor(temp) }}>
+            {isValid(temp) ? `${temp}` : 'N/A'}
+            {isValid(temp) && <span style={{ fontSize: '2rem' }}>°C</span>}
+          </div>
+          <div style={{ fontSize: '0.75em', color: 'var(--text-secondary)' }}>
+            {isValid(humidity) ? humidity : 'N/A'}
+            {isValid(humidity) && <span style={{ fontSize: '2rem' }}>% Fukt</span>}
+          </div>
         </div>
         <div className="weather-icon-container">
           <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} />
@@ -99,12 +105,11 @@ function WeatherNow({ data }) {
       </div>
       <div className="info-grid">
         <div className="info-card">
-          <div className="info-card-title">Vindhastighet<br/>och riktning</div>
+          <div className="info-card-title">Vindhastighet</div>
           <div className="info-card-value" style={{marginTop: 'auto'}}>
             {isValid(wind) ? wind : 'N/A'}{isValid(wind) && <span style={{fontSize: '1rem'}}>m/s</span>}
-            {isValid(windDirDeg) && <span style={{display: 'inline-block', transform: `rotate(${windDirDeg}deg)`, marginLeft: '10px'}}>↓</span>}
           </div>
-          <div className="info-card-subtext">{getBeaufortScale(wind)}{isValid(windDirDeg) && <><br/>från {getWindDirection(windDirDeg)}</>}</div>
+          <div className="info-card-subtext">{getBeaufortScale(wind)}</div>
         </div>
         
         <div className="info-card">
@@ -173,6 +178,9 @@ function WeatherNow({ data }) {
           <div className="info-card-subtext">{isValid(waveDirection) ? `${Math.round(waveDirection)}°` : 'N/A'}</div>
         </div>
 
+      </div>
+      <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+        Uppdaterat: {data.referenceTime ? new Date(data.referenceTime).toLocaleString('sv-SE') : 'Okänt'}
       </div>
     </div>
   );
