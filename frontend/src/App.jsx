@@ -138,6 +138,10 @@ function App() {
         onTouchEnd={handleTouchEnd}
         ref={mainContentRef}
       >
+        <div className="top-bar">
+          <h2>{activeTab}</h2>
+        </div>
+        
         {(pullDist > 0 || (loading && weatherData)) && (
           <div style={{ 
             height: loading ? '60px' : `${pullDist}px`, 

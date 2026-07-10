@@ -375,3 +375,34 @@ h1 {
   opacity: 0.3;
   cursor: not-allowed;
 }
+
+.top-bar {
+  margin-bottom: 30px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.top-bar h2 {
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Make detailed view look different */
+.detailed-view .temp-large {
+  font-size: 3rem; /* Mindre än i NU fliken */
+  margin-bottom: 30px;
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+}
+
+.detailed-view .info-grid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.detailed-view .info-card {
+  padding: 15px 5px;
+  border-radius: 12px;
+  background-color: rgba(26, 32, 44, 0.7); /* Lite mer transparent */
+}
