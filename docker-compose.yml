@@ -10,7 +10,7 @@ services:
   backend:
     image: ghcr.io/minglarn/batvader-backend:latest
     ports:
-      - "8090:8000"
+      - "8000:8000"
     volumes:
       - sqlite_data:/app/data
 
