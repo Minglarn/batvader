@@ -152,7 +152,7 @@ function App() {
           <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {activeTab} 
             <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
-              - Trosa
+              - Trosa (Källa: SMHI & MET Norway)
             </span>
           </h2>
           {activeTab === 'NU' && weatherData && (() => {
