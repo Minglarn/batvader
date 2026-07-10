@@ -4,12 +4,20 @@ import WeatherNow from './WeatherNow';
 
 function WeatherForecast({ data }) {
   const [selectedHour, setSelectedHour] = useState(null);
+  const [page, setPage] = useState(0);
+
   if (!data || !data.timeSeries || data.timeSeries.length < 2) {
     return <h1>INGEN PROGNOS TILLGÄNGLIG</h1>;
   }
   
-  // Plocka ut kommande 12 timmarna
-  const forecastData = data.timeSeries.slice(1, 13);
+  // Plocka ut 10 timmar per sida
+  const itemsPerPage = 10;
+  const startIndex = page * itemsPerPage + 1;
+  const endIndex = Math.min(startIndex + itemsPerPage, data.timeSeries.length);
+  const forecastData = data.timeSeries.slice(startIndex, endIndex);
+
+  const hasNext = endIndex < data.timeSeries.length;
+  const hasPrev = page > 0;
 
   const getParam = (hourData, name) => {
     try {
@@ -40,9 +48,29 @@ function WeatherForecast({ data }) {
 
   return (
     <div>
-      <h2 style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '2px' }}>
-        Kommande 12 timmarna
-      </h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h2 style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', margin: 0, textTransform: 'uppercase', letterSpacing: '2px' }}>
+          Prognos
+        </h2>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={() => setPage(p => Math.max(0, p - 1))} 
+            disabled={!hasPrev}
+            className="nav-btn"
+            style={{ width: 'auto', padding: '0 15px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}
+          >
+            &larr; Tidigare
+          </button>
+          <button 
+            onClick={() => setPage(p => p + 1)} 
+            disabled={!hasNext}
+            className="nav-btn"
+            style={{ width: 'auto', padding: '0 15px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}
+          >
+            Senare &rarr;
+          </button>
+        </div>
+      </div>
       <div className="info-grid">
         {forecastData.map((hour, index) => {
           const time = new Date(hour.time);

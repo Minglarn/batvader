@@ -583,10 +583,9 @@ h1 {
 }
 
 .theme-ocean .sidebar {
-  background-color: rgba(10, 10, 10, 0.3);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background-color: #0a0a0f; /* Solid bakgrund */
   border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .theme-ocean .top-bar {
