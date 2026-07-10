@@ -72,8 +72,28 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
     );
   };
 
-  // 1-3: Sun
+  const currentHour = new Date().getHours();
+  const isNight = currentHour >= 22 || currentHour <= 4;
+
+  // 1-3: Sun or Moon
   if (code >= 1 && code <= 3) {
+    if (isNight) {
+      return (
+        <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
+          <defs>
+            <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#E0E0FF" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#A0A0FF" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          {renderWindArrows()}
+          <g className="anim-float">
+            <circle cx="50" cy="50" r="25" fill="url(#moonGlow)" />
+            <path d="M 60 35 A 20 20 0 1 0 60 65 A 25 25 0 1 1 60 35 Z" fill="#E0E0FF" />
+          </g>
+        </svg>
+      );
+    }
     return (
       <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
         <defs>
@@ -83,6 +103,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#FF5500" stopOpacity="0" />
           </radialGradient>
         </defs>
+        {renderWindArrows()}
         <g className="anim-spin-slow" style={{ transformOrigin: "50px 50px" }}>
           <circle cx="50" cy="50" r="30" fill="url(#sunGlow)" />
           {/* Sun rays */}
@@ -97,7 +118,6 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <line x1="75" y1="25" x2="82" y2="18" />
           </g>
         </g>
-        {renderWindArrows()}
       </svg>
     );
   }
@@ -112,10 +132,10 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#AAAAAA" stopOpacity="0.7" />
           </linearGradient>
         </defs>
+        {renderWindArrows()}
         <g className="anim-float">
           <path d="M 30 60 A 15 15 0 0 1 30 30 A 20 20 0 0 1 70 35 A 15 15 0 0 1 70 60 Z" fill="url(#cloudGlow)" />
         </g>
-        {renderWindArrows()}
       </svg>
     );
   }
@@ -130,6 +150,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#444444" stopOpacity="0.9" />
           </linearGradient>
         </defs>
+        {renderWindArrows()}
         <g className="anim-float">
           <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#darkCloud)" />
         </g>
@@ -138,7 +159,6 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
           <line x1="55" y1="50" x2="50" y2="65" />
           <line x1="70" y1="55" x2="65" y2="70" />
         </g>
-        {renderWindArrows()}
       </svg>
     );
   }
@@ -153,13 +173,13 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#222222" stopOpacity="1" />
           </linearGradient>
         </defs>
+        {renderWindArrows()}
         <g className="anim-float">
           <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#thunderCloud)" />
         </g>
         <g className="anim-flash" fill="#FFF700">
           <polygon points="55,45 45,65 52,65 42,90 60,60 52,60" />
         </g>
-        {renderWindArrows()}
       </svg>
     );
   }
@@ -174,6 +194,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#999999" stopOpacity="0.8" />
           </linearGradient>
         </defs>
+        {renderWindArrows()}
         <g className="anim-float">
           <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#snowCloud)" />
         </g>
@@ -183,7 +204,6 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
           <circle cx="50" cy="75" r="3.5" />
           <circle cx="70" cy="70" r="2" />
         </g>
-        {renderWindArrows()}
       </svg>
     );
   }
