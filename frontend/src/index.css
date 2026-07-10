@@ -302,15 +302,13 @@ h1 {
 }
 
 .info-card-title {
-  font-size: 0.75rem;
+  font-size: min(0.75rem, 11cqi);
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   margin-bottom: 10px;
   font-weight: 600;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   width: 100%;
 }
 
@@ -326,8 +324,8 @@ h1 {
     padding: 25px;
   }
   .info-card-title {
-    font-size: 0.9rem;
-    letter-spacing: 2px;
+    font-size: min(0.9rem, 10cqi);
+    letter-spacing: 1px;
     margin-bottom: 15px;
   }
   .info-card-value {
