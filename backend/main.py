@@ -21,7 +21,7 @@ def fetch_weather_data(lat: float, lon: float):
     lat_str = f"{lat:.4f}"
     lon_str = f"{lon:.4f}"
     smhi_url = f"https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/{lon_str}/lat/{lat_str}/data.json"
-    ocean_url = f"https://marine-api.open-meteo.com/v1/marine?latitude={lat}&longitude={lon}&current=wave_height,ocean_current_velocity,ocean_current_direction"
+    ocean_url = f"https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat={lat}&lon={lon}"
     
     smhi_data = None
     try:
@@ -33,17 +33,20 @@ def fetch_weather_data(lat: float, lon: float):
         return None
         
     try:
-        res = requests.get(ocean_url, timeout=10)
+        headers = {"User-Agent": "BatVader/1.0 github.com/Minglarn/batvader"}
+        res = requests.get(ocean_url, headers=headers, timeout=10)
         res.raise_for_status()
         ocean_data = res.json()
-        if "current" in ocean_data:
-            c = ocean_data["current"]
-            # Baka in ocean_data direkt i SMHI's första TimeSeries objekt!
-            smhi_data["timeSeries"][0]["data"]["ocean_wave_height"] = c.get("wave_height", "-")
-            smhi_data["timeSeries"][0]["data"]["ocean_velocity"] = c.get("ocean_current_velocity", "-")
-            smhi_data["timeSeries"][0]["data"]["ocean_direction"] = c.get("ocean_current_direction", "-")
+        ts = ocean_data.get("properties", {}).get("timeseries", [])
+        if ts:
+            details = ts[0].get("data", {}).get("instant", {}).get("details", {})
+            smhi_data["timeSeries"][0]["data"]["sea_water_temperature"] = details.get("sea_water_temperature", "-")
+            smhi_data["timeSeries"][0]["data"]["ocean_wave_height"] = details.get("sea_surface_wave_height", "-")
+            smhi_data["timeSeries"][0]["data"]["ocean_wave_direction"] = details.get("sea_surface_wave_from_direction", "-")
+            smhi_data["timeSeries"][0]["data"]["ocean_velocity"] = details.get("sea_water_speed", "-")
+            smhi_data["timeSeries"][0]["data"]["ocean_direction"] = details.get("sea_water_to_direction", "-")
     except Exception as e:
-        print(f"Error fetching ocean data: {e}")
+        print(f"Error fetching ocean data from MET Norway: {e}")
         
     return smhi_data
 

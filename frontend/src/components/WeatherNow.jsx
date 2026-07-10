@@ -24,10 +24,12 @@ function WeatherNow({ data }) {
   const thunder = getParam('thunderstorm_probability');
   const symbolCode = getParam('symbol_code');
   
-  // Ocean data
+  // Ocean data (MET Norway Oceanforecast 2.0)
   const waveHeight = getParam('ocean_wave_height');
+  const waveDirection = getParam('ocean_wave_direction');
   const oceanVelocity = getParam('ocean_velocity');
   const oceanDirection = getParam('ocean_direction');
+  const seaWaterTemp = getParam('sea_water_temperature');
 
   const getWindDirection = (deg) => {
     if (deg === '-') return '-';
@@ -70,14 +72,8 @@ function WeatherNow({ data }) {
     <div>
       <div className="weather-header">
         <div className="temp-large">{temp}°C</div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-          <div className="weather-icon-container">
-            <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} />
-          </div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', textAlign: 'right', marginTop: '5px', lineHeight: '1.4' }}>
-            <span style={{ color: 'var(--text-primary)', fontWeight: 'bold' }}>{getWeatherDescription(symbolCode)}</span><br/>
-            {getBeaufortScale(wind)} {wind !== '-' ? `${wind} m/s` : ''}
-          </div>
+        <div className="weather-icon-container">
+          <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} />
         </div>
       </div>
       <div className="info-grid">
@@ -123,7 +119,8 @@ function WeatherNow({ data }) {
 
         <div className="info-card">
           <div className="info-card-title">Vattentemp</div>
-          <div className="info-card-value" style={{marginTop: 'auto'}}>15°C</div>
+          <div className="info-card-value" style={{marginTop: 'auto'}}>{seaWaterTemp !== '-' ? `${seaWaterTemp}` : '-'}<span style={{fontSize: '1rem'}}>°C</span></div>
+          <div className="info-card-subtext">{seaWaterTemp !== '-' ? (parseFloat(seaWaterTemp) >= 20 ? 'Badvänligt' : parseFloat(seaWaterTemp) >= 15 ? 'Svalt' : 'Kallt') : '-'}</div>
         </div>
 
         <div className="info-card">
@@ -131,7 +128,7 @@ function WeatherNow({ data }) {
           <div className="info-card-value" style={{marginTop: 'auto'}}>
             <span style={{display: 'inline-block', transform: `rotate(${oceanDirection !== '-' ? oceanDirection : 0}deg)`}}>↓</span>
           </div>
-          <div className="info-card-subtext">{oceanVelocity !== '-' ? `${oceanVelocity} km/h` : '-'}</div>
+          <div className="info-card-subtext">{oceanVelocity !== '-' ? `${oceanVelocity} m/s` : '-'}</div>
         </div>
 
         <div className="info-card">
@@ -149,11 +146,11 @@ function WeatherNow({ data }) {
         </div>
 
         <div className="info-card">
-          <div className="info-card-title">Vattenstånd</div>
+          <div className="info-card-title">Vågriktning</div>
           <div className="info-card-value" style={{marginTop: 'auto'}}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h20M12 2v10M8 6l4-4 4 4M2 18s2-2 4-2 4 2 4 2 4-2 4-2M2 22s2-2 4-2 4 2 4 2 4-2 4-2"></path></svg>
+            <span style={{display: 'inline-block', transform: `rotate(${waveDirection !== '-' ? waveDirection : 0}deg)`, fontSize: '2rem'}}>↓</span>
           </div>
-          <div className="info-card-subtext">32.6 cm</div>
+          <div className="info-card-subtext">{waveDirection !== '-' ? `${Math.round(waveDirection)}°` : '-'}</div>
         </div>
 
       </div>

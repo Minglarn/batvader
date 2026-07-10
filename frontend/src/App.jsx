@@ -148,8 +148,21 @@ function App() {
         onTouchEnd={handleTouchEnd}
         ref={mainContentRef}
       >
-        <div className="top-bar">
+        <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <h2>{activeTab}</h2>
+          {activeTab === 'NU' && weatherData && (() => {
+            const getP = (name) => { try { return weatherData.timeSeries[0].data[name]; } catch { return '-'; } };
+            const sc = parseInt(getP('symbol_code'), 10);
+            const ws = getP('wind_speed');
+            const descs = {1:'Klart',2:'Lätt molnighet',3:'Halvklart',4:'Molnigt',5:'Mycket moln',6:'Mulet',7:'Dimma',8:'Lätt regnskur',9:'Regnskur',10:'Kraftig regnskur',11:'Åskskur',12:'Lätt by av regn/snö',13:'By av regn/snö',14:'Kraftig by av regn/snö',15:'Lätt snöby',16:'Snöby',17:'Kraftig snöby',18:'Lätt regn',19:'Regn',20:'Kraftigt regn',21:'Åska',22:'Lätt snöblandat regn',23:'Snöblandat regn',24:'Kraftigt snöblandat regn',25:'Lätt snöfall',26:'Snöfall',27:'Kraftigt snöfall'};
+            const w = parseFloat(ws);
+            const bf = isNaN(w) ? '' : w<0.3?'Lugnt':w<1.6?'Svag vind':w<3.4?'Lätt bris':w<5.5?'God bris':w<8.0?'Frisk bris':w<10.8?'Styv bris':w<13.9?'Hård bris':w<17.2?'Styv kuling':w<20.8?'Hård kuling':w<24.5?'Halv storm':w<28.5?'Storm':'Orkan';
+            return (
+              <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', letterSpacing: '1px' }}>
+                {descs[sc] || ''} &middot; {bf} {ws !== '-' ? `${ws} m/s` : ''}
+              </span>
+            );
+          })()}
         </div>
         
         {(pullDist > 0 || (loading && weatherData)) && (
@@ -183,7 +196,7 @@ function App() {
             {activeTab === 'PROGNOS' && <div>PROGNOS-VY KOMMER SNART</div>}
             {activeTab === 'INSTÄLLNINGAR' && <Settings theme={theme} setTheme={setTheme} />}
             <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem' }}>
-              Väderdata levererad av SMHI
+              Väderdata: SMHI | Havsdata: MET Norway
             </footer>
           </>
         )}
