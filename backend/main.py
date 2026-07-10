@@ -24,17 +24,17 @@ def fetch_weather_data(lat: float, lon: float):
     ocean_url = f"https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat={lat}&lon={lon}"
     
     smhi_data = None
-    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: SMHI API för koordinater {lat_str}, {lon_str}...")
+    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: SMHI API för koordinater {lat_str}, {lon_str}...", flush=True)
     try:
         response = requests.get(smhi_url, timeout=10)
         response.raise_for_status()
         smhi_data = response.json()
-        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SMHI data hämtad.")
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SMHI data hämtad.", flush=True)
     except Exception as e:
-        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta från SMHI: {e}")
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta från SMHI: {e}", flush=True)
         return None
         
-    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: MET Norway Oceanforecast för koordinater {lat_str}, {lon_str}...")
+    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: MET Norway Oceanforecast för koordinater {lat_str}, {lon_str}...", flush=True)
     try:
         headers = {"User-Agent": "BatVader/1.0 github.com/Minglarn/batvader"}
         res = requests.get(ocean_url, headers=headers, timeout=10)
@@ -48,9 +48,9 @@ def fetch_weather_data(lat: float, lon: float):
             smhi_data["timeSeries"][0]["data"]["ocean_wave_direction"] = details.get("sea_surface_wave_from_direction", "-")
             smhi_data["timeSeries"][0]["data"]["ocean_velocity"] = details.get("sea_water_speed", "-")
             smhi_data["timeSeries"][0]["data"]["ocean_direction"] = details.get("sea_water_to_direction", "-")
-        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: MET Norway data hämtad och inbakad.")
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: MET Norway data hämtad och inbakad.", flush=True)
     except Exception as e:
-        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta ocean data från MET Norway: {e}")
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta ocean data från MET Norway: {e}", flush=True)
         
     return smhi_data
 
@@ -76,7 +76,7 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 async def update_weather_job():
-    print(f"[{datetime.datetime.now()}] Running background job to fetch weather...")
+    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Kör bakgrundsjobb för att hämta väder...", flush=True)
     db = SessionLocal()
     for lat, lon in watched_locations:
         data = fetch_weather_data(lat, lon)
@@ -87,37 +87,35 @@ async def update_weather_job():
                 data=json.dumps(data)
             )
             db.add(weather_record)
-            print(f"Saved weather data for {lat}, {lon}")
+            print(f"Saved weather data for {lat}, {lon}", flush=True)
             await manager.broadcast(json.dumps(data))
     db.commit()
     db.close()
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("░████████      ░███    ░██████████░██    ░██    ░███    ░███████   ░██████████ ░█████████  ")
-    print("░██    ░██    ░██░██       ░██    ░██    ░██   ░██░██   ░██   ░██  ░██         ░██     ░██ ")
-    print("░██    ░██   ░██  ░██      ░██    ░██    ░██  ░██  ░██  ░██    ░██ ░██         ░██     ░██ ")
-    print("░████████   ░█████████     ░██    ░██    ░██ ░█████████ ░██    ░██ ░█████████  ░█████████  ")
-    print("░██     ░██ ░██    ░██     ░██     ░██  ░██  ░██    ░██ ░██    ░██ ░██         ░██   ░██   ")
-    print("░██     ░██ ░██    ░██     ░██      ░██░██   ░██    ░██ ░██   ░██  ░██         ░██    ░██  ")
-    print("░█████████  ░██    ░██     ░██       ░███    ░██    ░██ ░███████   ░██████████ ░██     ░██ ")
-    print("                                                                                           ")
-    print("===========================================================================================")
-    print(f"BATVADER API SERVER STARTAR")
-    print(f"Koddagens datum: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("Version: 1.0.0 (CalVer)")
-    print("Byggd med: FastAPI & WebSockets för 100% Live UI")
-    print("===========================================================================================\n")
+    print("░████████      ░███    ░██████████░██    ░██    ░███    ░███████   ░██████████ ░█████████  ", flush=True)
+    print("░██    ░██    ░██░██       ░██    ░██    ░██   ░██░██   ░██   ░██  ░██         ░██     ░██ ", flush=True)
+    print("░██    ░██   ░██  ░██      ░██    ░██    ░██  ░██  ░██  ░██    ░██ ░██         ░██     ░██ ", flush=True)
+    print("░████████   ░█████████     ░██    ░██    ░██ ░█████████ ░██    ░██ ░█████████  ░█████████  ", flush=True)
+    print("░██     ░██ ░██    ░██     ░██     ░██  ░██  ░██    ░██ ░██    ░██ ░██         ░██   ░██   ", flush=True)
+    print("░██     ░██ ░██    ░██     ░██      ░██░██   ░██    ░██ ░██   ░██  ░██         ░██    ░██  ", flush=True)
+    print("░█████████  ░██    ░██     ░██       ░███    ░██    ░██ ░███████   ░██████████ ░██     ░██ ", flush=True)
+    print("                                                                                           ", flush=True)
+    print("===========================================================================================", flush=True)
+    print(f"BATVADER API SERVER STARTAR", flush=True)
+    print(f"Koddagens datum: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
+    print("Version: 1.0.0 (CalVer)", flush=True)
+    print("Byggd med: FastAPI & WebSockets för 100% Live UI", flush=True)
+    print("===========================================================================================\n", flush=True)
     
     scheduler = AsyncIOScheduler()
     scheduler.add_job(update_weather_job, 'cron', minute=0)
     scheduler.start()
     
-    db = SessionLocal()
-    count = db.query(models.WeatherData).count()
-    db.close()
-    if count == 0:
-        await update_weather_job()
+    # Kör alltid en datahämtning vid start
+    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Tvingar en initial datahämtning vid uppstart...", flush=True)
+    await update_weather_job()
         
     yield
     scheduler.shutdown()
