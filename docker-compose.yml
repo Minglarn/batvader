@@ -2,6 +2,8 @@ version: '3.8'
 services:
   frontend:
     image: ghcr.io/minglarn/batvader-frontend:latest
+    environment:
+      - TZ=Europe/Stockholm
     ports:
       - "8090:80"
     depends_on:
@@ -9,6 +11,8 @@ services:
 
   backend:
     image: ghcr.io/minglarn/batvader-backend:latest
+    environment:
+      - TZ=Europe/Stockholm
     ports:
       - "8000:8000"
     volumes:
