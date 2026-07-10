@@ -139,7 +139,6 @@ function WeatherNow({ data }) {
   
   return (
     <div>
-      <h1>JUST NU</h1>
       <div className="temp-large">{temp}°C</div>
       <div className="info-grid">
         <div className="info-card">
