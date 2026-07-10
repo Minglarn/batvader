@@ -13,7 +13,7 @@ function WeatherDetailed({ data }) {
   const currentData = timeSeries[selectedHourIndex];
 
   // Parse time
-  const validTime = new Date(currentData.validTime);
+  const validTime = new Date(currentData.time);
   const timeString = validTime.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
   const dateString = validTime.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
 

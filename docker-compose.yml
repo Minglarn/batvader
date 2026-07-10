@@ -13,6 +13,7 @@ services:
     image: ghcr.io/minglarn/batvader-backend:latest
     environment:
       - TZ=Europe/Stockholm
+      - PYTHONUNBUFFERED=1
     ports:
       - "8000:8000"
     volumes:
