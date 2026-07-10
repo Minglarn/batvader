@@ -3,6 +3,7 @@ import WeatherNow from './WeatherNow';
 
 function WeatherDetailed({ data }) {
   const [selectedHourIndex, setSelectedHourIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(null);
   const touchStartX = useRef(null);
 
   if (!data || !data.timeSeries || data.timeSeries.length === 0) {
@@ -18,11 +19,17 @@ function WeatherDetailed({ data }) {
   const dateString = validTime.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
 
   const handlePrev = () => {
-    setSelectedHourIndex(prev => Math.max(0, prev - 1));
+    if (selectedHourIndex > 0) {
+      setSlideDirection('prev');
+      setSelectedHourIndex(prev => prev - 1);
+    }
   };
 
   const handleNext = () => {
-    setSelectedHourIndex(prev => Math.min(timeSeries.length - 1, prev + 1));
+    if (selectedHourIndex < timeSeries.length - 1) {
+      setSlideDirection('next');
+      setSelectedHourIndex(prev => prev + 1);
+    }
   };
 
   // Touch logic for swipe
@@ -77,7 +84,11 @@ function WeatherDetailed({ data }) {
         </button>
       </div>
 
-      <div style={{ flexGrow: 1 }}>
+      <div 
+        key={selectedHourIndex}
+        className={slideDirection ? `slide-${slideDirection}` : ''}
+        style={{ flexGrow: 1 }}
+      >
         <WeatherNow data={{ timeSeries: [currentData] }} />
       </div>
     </div>
