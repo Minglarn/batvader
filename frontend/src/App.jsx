@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './components/Sidebar';
 import WeatherNow from './components/WeatherNow';
 import WeatherDetailed from './components/WeatherDetailed';
+import WeatherBackground from './components/WeatherBackground';
+import Settings from './components/Settings';
 
 const DEFAULT_LAT = 58.8986;
 const DEFAULT_LON = 17.5504;
@@ -11,6 +13,13 @@ function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState({ lat: DEFAULT_LAT, lon: DEFAULT_LON });
   const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('batvader_theme') || 'oled';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('batvader_theme', theme);
+  }, [theme]);
 
   const ws = useRef(null);
 
@@ -128,7 +137,8 @@ function App() {
   };
 
   return (
-    <div className="app-container">
+    <div className={`app-container theme-${theme}`}>
+      {theme === 'ocean' && <WeatherBackground data={weatherData} />}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div 
         className="main-content" 
@@ -171,7 +181,7 @@ function App() {
             {activeTab === 'NU' && <WeatherNow data={weatherData} />}
             {activeTab === 'DETALJERAT' && <WeatherDetailed data={weatherData} />}
             {activeTab === 'PROGNOS' && <div>PROGNOS-VY KOMMER SNART</div>}
-            {activeTab === 'INSTÄLLNINGAR' && <div>INSTÄLLNINGAR KOMMER SNART</div>}
+            {activeTab === 'INSTÄLLNINGAR' && <Settings theme={theme} setTheme={setTheme} />}
             <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem' }}>
               Väderdata levererad av SMHI
             </footer>
