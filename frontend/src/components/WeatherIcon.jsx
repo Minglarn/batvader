@@ -57,7 +57,9 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
 
     return (
       <g transform={`rotate(${rotation} 50 50)`}>
-        <g className="anim-wind" stroke={color} style={{ animationDuration: animSpeed }} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+        <g stroke={color} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <animateTransform attributeName="transform" type="translate" from="-40 0" to="40 0" dur={animSpeed} repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.2;0.8;1" dur={animSpeed} repeatCount="indefinite" />
           {Array.from({ length: numArrows }).map((_, i) => {
             const yOffset = (i - (numArrows - 1) / 2) * 12;
             return (
