@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './components/Sidebar';
-import { getWeatherData } from './services/api';
+import WeatherNow from './components/WeatherNow';
+import WeatherDetailed from './components/WeatherDetailed';
 
 const DEFAULT_LAT = 58.8986;
 const DEFAULT_LON = 17.5504;
@@ -10,6 +11,8 @@ function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState({ lat: DEFAULT_LAT, lon: DEFAULT_LON });
   const [loading, setLoading] = useState(true);
+
+  const ws = useRef(null);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -21,32 +24,66 @@ function App() {
           });
         },
         (error) => {
-          console.warn("Platstjänster fel:", error.message);
-          setLocation({ lat: DEFAULT_LAT, lon: DEFAULT_LON });
+          console.warn(`Platstjänster fel: ${error.message}. Använder standard (Trosa).`);
+          connectWebSocket(DEFAULT_LAT, DEFAULT_LON);
         },
-        { timeout: 10000, maximumAge: 0 }
+        { timeout: 10000 }
       );
     } else {
-      setLocation({ lat: DEFAULT_LAT, lon: DEFAULT_LON });
+      connectWebSocket(DEFAULT_LAT, DEFAULT_LON);
     }
   }, []);
 
-  const fetchWeather = async () => {
+  useEffect(() => {
+    if (location.lat !== DEFAULT_LAT || location.lon !== DEFAULT_LON) {
+      connectWebSocket(location.lat, location.lon);
+    } else if (location.lat === DEFAULT_LAT && location.lon === DEFAULT_LON && loading) {
+       connectWebSocket(DEFAULT_LAT, DEFAULT_LON);
+    }
+    
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, [location.lat, location.lon]);
+
+  const connectWebSocket = (lat, lon) => {
+    if (ws.current) ws.current.close();
     setLoading(true);
-    const data = await getWeatherData(location.lat, location.lon);
-    setWeatherData(data);
-    setLoading(false);
+    
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    const wsUrl = `${protocol}//${host}/ws/weather?lat=${lat}&lon=${lon}`;
+    
+    ws.current = new WebSocket(wsUrl);
+    
+    ws.current.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data && data.timeSeries) {
+          setWeatherData(data);
+          setLoading(false);
+          setPullDist(0);
+        }
+      } catch (err) {
+        console.error("Kunde inte tolka websocket-data", err);
+      }
+    };
+
+    ws.current.onerror = (error) => {
+      console.error("WebSocket fel:", error);
+      setLoading(false);
+    };
+
+    ws.current.onclose = () => {
+      console.warn("WebSocket stängd, försöker återansluta om 5 sek...");
+      setTimeout(() => {
+        connectWebSocket(lat, lon);
+      }, 5000);
+    };
   };
 
-  useEffect(() => {
-    let interval;
-    fetchWeather();
-    // Frontend hämtar från databasen var 5:e minut
-    interval = setInterval(fetchWeather, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [location]);
-
-  // Pull to refresh logik
   const [startY, setStartY] = useState(null);
   const [pullDist, setPullDist] = useState(0);
   const mainContentRef = useRef(null);
@@ -61,14 +98,18 @@ function App() {
     if (startY !== null) {
       const y = e.touches[0].clientY;
       if (y > startY) {
-        setPullDist(Math.min(y - startY, 100)); // Max drag
+        setPullDist(Math.min(y - startY, 100));
       }
     }
   };
 
   const handleTouchEnd = () => {
     if (pullDist > 60) {
-      fetchWeather();
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.send("ping");
+      } else {
+        connectWebSocket(location.lat, location.lon);
+      }
     }
     setStartY(null);
     setPullDist(0);
@@ -108,13 +149,13 @@ function App() {
           </div>
         )}
         {loading && !weatherData ? (
-          <h1>LADDAR DATA...</h1>
+          <h1 style={{textAlign: 'center', marginTop: '20vh'}}>LADDAR DATA...</h1>
         ) : (
           <>
             {activeTab === 'NU' && <WeatherNow data={weatherData} />}
-            {activeTab === 'DETALJERAT' && <h1>DETALJERAT (Kommer Snart)</h1>}
-            {activeTab === 'PROGNOS' && <h1>PROGNOS (Kommer Snart)</h1>}
-            {activeTab === 'INSTÄLLNINGAR' && <h1>INSTÄLLNINGAR (Kommer Snart)</h1>}
+            {activeTab === 'DETALJERAT' && <WeatherDetailed data={weatherData} />}
+            {activeTab === 'PROGNOS' && <div>PROGNOS-VY KOMMER SNART</div>}
+            {activeTab === 'INSTÄLLNINGAR' && <div>INSTÄLLNINGAR KOMMER SNART</div>}
             <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem' }}>
               Väderdata levererad av SMHI
             </footer>
