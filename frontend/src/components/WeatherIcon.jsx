@@ -15,19 +15,44 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   }
 
   const renderWindArrows = () => {
-    if (windSpeed === undefined || windSpeed === '-' || isNaN(windSpeed) || windSpeed < 3) return null;
+    if (windSpeed === undefined || windSpeed === '-' || isNaN(windSpeed) || windSpeed < 3.4) return null;
     
     // Wind direction is "from", meaning wind coming from 90 (East) blows to 270 (West).
-    // An arrow pointing right (0 deg) in SVG should be rotated by windDir - 90 to point in the direction the wind is blowing.
+    // An arrow pointing right (0 deg) in SVG should be rotated by windDir - 90.
     const dir = parseInt(windDir, 10);
     const rotation = !isNaN(dir) ? dir - 90 : 0; 
     
-    const numArrows = Math.min(4, Math.floor(windSpeed / 3));
+    let numArrows = 0;
+    let color = "rgba(255, 255, 255, 0.7)";
+    let animSpeed = "1.5s";
+
+    if (windSpeed >= 3.4 && windSpeed < 8.0) {
+      // Måttlig vind
+      numArrows = 2;
+      color = "rgba(255, 255, 255, 0.8)";
+      animSpeed = "1.2s";
+    } else if (windSpeed >= 8.0 && windSpeed < 13.9) {
+      // Frisk vind
+      numArrows = 3;
+      color = "#FFD700"; // Yellow
+      animSpeed = "0.9s";
+    } else if (windSpeed >= 13.9 && windSpeed < 20.8) {
+      // Hård vind
+      numArrows = 4;
+      color = "#FF8C00"; // Orange
+      animSpeed = "0.6s";
+    } else if (windSpeed >= 20.8) {
+      // Mycket hård vind / Storm
+      numArrows = 5;
+      color = "#FF0000"; // Red
+      animSpeed = "0.4s";
+    }
+
     if (numArrows < 1) return null;
 
     return (
       <g transform={`rotate(${rotation} 50 50)`}>
-        <g className="anim-wind" stroke="rgba(255, 255, 255, 0.5)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+        <g className="anim-wind" stroke={color} style={{ animationDuration: animSpeed }} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
           {Array.from({ length: numArrows }).map((_, i) => {
             const yOffset = (i - (numArrows - 1) / 2) * 12;
             return (
