@@ -24,21 +24,27 @@ function App() {
   const ws = useRef(null);
 
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lon: position.coords.longitude
-          });
-        },
-        (error) => {
-          console.warn(`Platstjänster fel: ${error.message}. Använder standard (Trosa).`);
-          // location is already Trosa, so second useEffect will handle it
-        },
-        { timeout: 10000 }
-      );
-    }
+    const fetchLocation = () => {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLocation({
+              lat: position.coords.latitude,
+              lon: position.coords.longitude
+            });
+          },
+          (error) => {
+            console.warn(`Platstjänster fel: ${error.message}. Använder standard (Trosa).`);
+          },
+          { timeout: 10000, enableHighAccuracy: true }
+        );
+      }
+    };
+
+    fetchLocation();
+    const locInterval = setInterval(fetchLocation, 15 * 60 * 1000); // 15 minuter
+
+    return () => clearInterval(locInterval);
   }, []);
 
   useEffect(() => {
@@ -152,7 +158,7 @@ function App() {
           <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {activeTab} 
             <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
-              - Trosa
+              - {weatherData?.location_name || 'Hämtar plats...'}
             </span>
           </h2>
           {activeTab === 'NU' && weatherData && (() => {

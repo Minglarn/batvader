@@ -17,6 +17,19 @@ DEFAULT_LON = 17.5504
 
 watched_locations = {(DEFAULT_LAT, DEFAULT_LON)}
 
+def get_location_name(lat: float, lon: float):
+    url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}"
+    headers = {"User-Agent": "BatVader/1.0 github.com/Minglarn/batvader"}
+    try:
+        res = requests.get(url, headers=headers, timeout=5)
+        if res.status_code == 200:
+            data = res.json()
+            addr = data.get("address", {})
+            return addr.get("village") or addr.get("town") or addr.get("city") or addr.get("municipality") or "Okänd plats"
+    except Exception as e:
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Nominatim reverse geocoding misslyckades: {e}", flush=True)
+    return "Okänd plats"
+
 def fetch_weather_data(lat: float, lon: float):
     lat_str = f"{lat:.4f}"
     lon_str = f"{lon:.4f}"
@@ -52,6 +65,7 @@ def fetch_weather_data(lat: float, lon: float):
     except Exception as e:
         print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta ocean data från MET Norway: {e}", flush=True)
         
+    smhi_data["location_name"] = get_location_name(lat, lon)
     return smhi_data
 
 class ConnectionManager:
