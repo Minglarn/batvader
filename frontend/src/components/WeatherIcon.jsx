@@ -1,5 +1,5 @@
 import React from 'react';
-import SunCalc from 'suncalc';
+import * as SunCalc from 'suncalc';
 
 // SMHI Wsymb2 code mapping:
 // 1-3: Clear / Sun
