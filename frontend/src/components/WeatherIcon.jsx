@@ -7,12 +7,40 @@ import React from 'react';
 // 11, 21: Thunder
 // 12-17, 22-27: Snow
 
-const WeatherIcon = ({ symbolCode }) => {
+const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   const code = parseInt(symbolCode, 10);
   
   if (isNaN(code)) {
     return null;
   }
+
+  const renderWindArrows = () => {
+    if (windSpeed === undefined || windSpeed === '-' || isNaN(windSpeed) || windSpeed < 3) return null;
+    
+    // Wind direction is "from", meaning wind coming from 90 (East) blows to 270 (West).
+    // An arrow pointing right (0 deg) in SVG should be rotated by windDir - 90 to point in the direction the wind is blowing.
+    const dir = parseInt(windDir, 10);
+    const rotation = !isNaN(dir) ? dir - 90 : 0; 
+    
+    const numArrows = Math.min(4, Math.floor(windSpeed / 3));
+    if (numArrows < 1) return null;
+
+    return (
+      <g transform={`rotate(${rotation} 50 50)`}>
+        <g className="anim-wind" stroke="rgba(255, 255, 255, 0.5)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          {Array.from({ length: numArrows }).map((_, i) => {
+            const yOffset = (i - (numArrows - 1) / 2) * 12;
+            return (
+              <g key={i} transform={`translate(0, ${yOffset})`}>
+                <line x1="30" y1="50" x2="70" y2="50" />
+                <polyline points="60,45 70,50 60,55" />
+              </g>
+            );
+          })}
+        </g>
+      </g>
+    );
+  };
 
   // 1-3: Sun
   if (code >= 1 && code <= 3) {
@@ -37,6 +65,7 @@ const WeatherIcon = ({ symbolCode }) => {
           <line x1="18" y1="82" x2="25" y2="75" />
           <line x1="75" y1="25" x2="82" y2="18" />
         </g>
+        {renderWindArrows()}
       </svg>
     );
   }
@@ -54,6 +83,7 @@ const WeatherIcon = ({ symbolCode }) => {
         <g className="anim-float">
           <path d="M 30 60 A 15 15 0 0 1 30 30 A 20 20 0 0 1 70 35 A 15 15 0 0 1 70 60 Z" fill="url(#cloudGlow)" />
         </g>
+        {renderWindArrows()}
       </svg>
     );
   }
@@ -76,6 +106,7 @@ const WeatherIcon = ({ symbolCode }) => {
           <line x1="55" y1="50" x2="50" y2="65" />
           <line x1="70" y1="55" x2="65" y2="70" />
         </g>
+        {renderWindArrows()}
       </svg>
     );
   }
@@ -96,6 +127,7 @@ const WeatherIcon = ({ symbolCode }) => {
         <g className="anim-flash" fill="#FFF700">
           <polygon points="55,45 45,65 52,65 42,90 60,60 52,60" />
         </g>
+        {renderWindArrows()}
       </svg>
     );
   }
@@ -119,6 +151,7 @@ const WeatherIcon = ({ symbolCode }) => {
           <circle cx="50" cy="75" r="3.5" />
           <circle cx="70" cy="70" r="2" />
         </g>
+        {renderWindArrows()}
       </svg>
     );
   }

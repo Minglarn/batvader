@@ -465,6 +465,10 @@ h1 {
   animation: svg-flash 5s infinite;
 }
 
+.anim-wind {
+  animation: svg-wind 1.5s linear infinite;
+}
+
 @keyframes svg-spin {
   100% { transform: rotate(360deg); }
 }
@@ -484,4 +488,11 @@ h1 {
 @keyframes svg-flash {
   0%, 90%, 94%, 98% { opacity: 0; }
   92%, 96%, 100% { opacity: 1; }
+}
+
+@keyframes svg-wind {
+  0% { transform: translateX(-40px); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateX(40px); opacity: 0; }
 }
