@@ -77,7 +77,7 @@ function WeatherDetailed({ data }) {
         </button>
       </div>
 
-      <div className="detailed-view" style={{ flexGrow: 1 }}>
+      <div style={{ flexGrow: 1 }}>
         <WeatherNow data={{ timeSeries: [currentData] }} />
       </div>
     </div>
