@@ -7,6 +7,7 @@ const DEFAULT_LON = 17.5504;
 
 function App() {
   const [activeTab, setActiveTab] = useState('NU');
+  const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState({ lat: DEFAULT_LAT, lon: DEFAULT_LON });
   const [loading, setLoading] = useState(true);
 
