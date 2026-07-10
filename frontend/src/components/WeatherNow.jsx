@@ -89,7 +89,10 @@ function WeatherNow({ data }) {
         <div className="info-card">
           <div className="info-card-title">Lufttryck</div>
           <div className="info-card-value" style={{marginTop: 'auto'}}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 14l-4-4"></path>
+              <path d="M3.34 16A10 10 0 1 1 20.66 16"></path>
+            </svg>
           </div>
           <div className="info-card-subtext">{pressure} hPa</div>
         </div>

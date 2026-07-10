@@ -57,9 +57,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
 
     return (
       <g transform={`rotate(${rotation} 50 50)`}>
-        <g stroke={color} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
-          <animateTransform attributeName="transform" type="translate" from="-60 0" to="60 0" dur={animSpeed} repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.2;0.8;1" dur={animSpeed} repeatCount="indefinite" />
+        <g className="anim-wind" stroke={color} style={{ animationDuration: animSpeed }} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
           {Array.from({ length: numArrows }).map((_, i) => {
             const yOffset = (i - (numArrows - 1) / 2) * 12;
             return (
@@ -77,7 +75,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   // 1-3: Sun
   if (code >= 1 && code <= 3) {
     return (
-      <svg className="weather-icon" viewBox="0 0 100 100" width="100%" height="100%">
+      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
         <defs>
           <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#FFF700" stopOpacity="1" />
@@ -107,7 +105,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   // 4-7: Clouds
   if (code >= 4 && code <= 7) {
     return (
-      <svg className="weather-icon" viewBox="0 0 100 100" width="100%" height="100%">
+      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
         <defs>
           <linearGradient id="cloudGlow" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.9" />
@@ -125,7 +123,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   // 8-10, 18-20: Rain
   if ((code >= 8 && code <= 10) || (code >= 18 && code <= 20)) {
     return (
-      <svg className="weather-icon" viewBox="0 0 100 100" width="100%" height="100%">
+      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
         <defs>
           <linearGradient id="darkCloud" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#777777" stopOpacity="0.9" />
@@ -148,7 +146,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   // 11, 21: Thunder
   if (code === 11 || code === 21) {
     return (
-      <svg className="weather-icon" viewBox="0 0 100 100" width="100%" height="100%">
+      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
         <defs>
           <linearGradient id="thunderCloud" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#555555" stopOpacity="1" />
