@@ -116,22 +116,21 @@ function App() {
   const [pullDist, setPullDist] = useState(0);
   const mainContentRef = useRef(null);
 
-  const handleTouchStart = (e) => {
-    if (mainContentRef.current && mainContentRef.current.scrollTop === 0) {
-      setStartY(e.touches[0].clientY);
+  const handleStart = (clientY) => {
+    if (mainContentRef.current && mainContentRef.current.scrollTop <= 5) {
+      setStartY(clientY);
     }
   };
 
-  const handleTouchMove = (e) => {
+  const handleMove = (clientY) => {
     if (startY !== null) {
-      const y = e.touches[0].clientY;
-      if (y > startY) {
-        setPullDist(Math.min(y - startY, 100));
+      if (clientY > startY) {
+        setPullDist(Math.min(clientY - startY, 100));
       }
     }
   };
 
-  const handleTouchEnd = () => {
+  const handleEnd = () => {
     if (pullDist > 60) {
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.send("ping");
@@ -150,9 +149,13 @@ function App() {
       <div 
         className="main-content" 
         style={{ position: 'relative' }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        onTouchStart={e => handleStart(e.touches[0].clientY)}
+        onTouchMove={e => handleMove(e.touches[0].clientY)}
+        onTouchEnd={handleEnd}
+        onMouseDown={e => handleStart(e.clientY)}
+        onMouseMove={e => handleMove(e.clientY)}
+        onMouseUp={handleEnd}
+        onMouseLeave={handleEnd}
         ref={mainContentRef}
       >
         <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
