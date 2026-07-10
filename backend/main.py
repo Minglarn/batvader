@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 import requests
 import models
-from database import engine, get_db
+from database import engine, get_db, SessionLocal
 import json
 from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
@@ -32,7 +32,7 @@ def fetch_smhi_data(lat: float, lon: float):
 
 def update_weather_job():
     print(f"[{datetime.datetime.now()}] Running background job to fetch weather...")
-    db = models.SessionLocal()
+    db = SessionLocal()
     for lat, lon in watched_locations:
         data = fetch_smhi_data(lat, lon)
         if data:
@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI):
     scheduler.add_job(update_weather_job, 'cron', minute=0)
     scheduler.start()
     
-    db = models.SessionLocal()
+    db = SessionLocal()
     count = db.query(models.WeatherData).count()
     db.close()
     if count == 0:
