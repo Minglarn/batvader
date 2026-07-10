@@ -20,20 +20,22 @@ function Sidebar({ activeTab, setActiveTab }) {
   return (
     <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
       <button className="toggle-btn" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? 'DÖLJ MENY' : 'MENY'}
+        {isOpen ? 'DÖLJ' : 'MENY'}
       </button>
-      {isOpen && tabs.map(tab => (
-        <button
-          key={tab}
-          className={`sidebar-btn ${activeTab === tab ? 'active' : ''}`}
-          onClick={() => {
-            setActiveTab(tab);
-            if (window.innerWidth < 768) setIsOpen(false);
-          }}
-        >
-          {tab}
-        </button>
-      ))}
+      <div className="sidebar-links">
+        {tabs.map(tab => (
+          <button
+            key={tab}
+            className={`sidebar-btn ${activeTab === tab ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab(tab);
+              if (window.innerWidth < 768) setIsOpen(false);
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

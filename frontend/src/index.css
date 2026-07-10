@@ -53,8 +53,17 @@ body {
 }
 
 .sidebar.closed {
+  height: 60px;
+}
+
+.sidebar-links {
+  display: flex;
   flex-direction: row;
-  justify-content: center;
+  width: 100%;
+}
+
+.sidebar.closed .sidebar-links {
+  display: none;
 }
 
 .toggle-btn {
@@ -84,11 +93,12 @@ body {
   color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 600;
-  padding: 20px 10px;
+  padding: 10px;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .sidebar-btn:hover {
@@ -130,6 +140,11 @@ body {
 
   .sidebar.closed {
     width: 60px;
+    height: 100%;
+  }
+
+  .sidebar-links {
+    flex-direction: column;
   }
 
   .sidebar.closed .toggle-btn {

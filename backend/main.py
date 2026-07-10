@@ -20,7 +20,7 @@ watched_locations = {(DEFAULT_LAT, DEFAULT_LON)}
 def fetch_smhi_data(lat: float, lon: float):
     lat_str = f"{lat:.4f}"
     lon_str = f"{lon:.4f}"
-    url = f"https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/{lon_str}/lat/{lat_str}/data.json"
+    url = f"https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/{lon_str}/lat/{lat_str}/data.json"
     
     try:
         response = requests.get(url, timeout=10)

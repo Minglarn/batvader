@@ -21,9 +21,10 @@ function App() {
           });
         },
         (error) => {
-          console.error("Platstjänster fel:", error);
+          console.warn("Platstjänster fel:", error.message);
           setLocation({ lat: DEFAULT_LAT, lon: DEFAULT_LON });
-        }
+        },
+        { timeout: 10000, maximumAge: 0 }
       );
     } else {
       setLocation({ lat: DEFAULT_LAT, lon: DEFAULT_LON });
@@ -69,16 +70,16 @@ function WeatherNow({ data }) {
   
   const getParam = (name) => {
     try {
-      const param = data.timeSeries[0].parameters.find(p => p.name === name);
-      return param ? param.values[0] : '-';
+      const val = data.timeSeries[0].data[name];
+      return val !== undefined ? val : '-';
     } catch {
       return '-';
     }
   };
 
-  const temp = getParam('t');
-  const wind = getParam('ws');
-  const gust = getParam('gust');
+  const temp = getParam('air_temperature');
+  const wind = getParam('wind_speed');
+  const gust = getParam('wind_speed_of_gust');
   
   return (
     <div>
