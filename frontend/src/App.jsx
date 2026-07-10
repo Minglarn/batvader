@@ -40,20 +40,47 @@ function App() {
     }
   }, []);
 
+  const fetchWeather = async () => {
+    setLoading(true);
+    const data = await getWeatherData(location.lat, location.lon);
+    setWeatherData(data);
+    setLoading(false);
+  };
+
   useEffect(() => {
     let interval;
-    const fetchWeather = async () => {
-      setLoading(true);
-      const data = await getWeatherData(location.lat, location.lon);
-      setWeatherData(data);
-      setLoading(false);
-    };
-
     fetchWeather();
     // Frontend hämtar från databasen var 5:e minut
     interval = setInterval(fetchWeather, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [location]);
+
+  // Pull to refresh logik
+  const [startY, setStartY] = useState(null);
+  const [pullDist, setPullDist] = useState(0);
+
+  const handleTouchStart = (e) => {
+    if (window.scrollY === 0) {
+      setStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (startY !== null) {
+      const y = e.touches[0].clientY;
+      if (y > startY) {
+        setPullDist(Math.min(y - startY, 100)); // Max drag
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullDist > 60) {
+      fetchWeather();
+    }
+    setStartY(null);
+    setPullDist(0);
+  };
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -70,7 +97,18 @@ function App() {
   return (
     <div className="app-container">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="main-content" style={{ position: 'relative' }}>
+      <div 
+        className="main-content" 
+        style={{ position: 'relative' }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {pullDist > 0 && (
+          <div style={{ textAlign: 'center', color: 'var(--accent)', height: `${pullDist}px`, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {pullDist > 60 ? 'Släpp för att uppdatera...' : 'Dra neråt...'}
+          </div>
+        )}
         <button 
           onClick={toggleFullScreen} 
           style={{ 
