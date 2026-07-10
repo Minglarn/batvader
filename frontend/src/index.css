@@ -471,6 +471,17 @@ h1 {
   animation: svg-wind 1.5s linear infinite;
 }
 
+@media (orientation: portrait) {
+  .anim-spin-slow,
+  .anim-float,
+  .anim-rain,
+  .anim-snow,
+  .anim-flash,
+  .anim-wind {
+    animation: none !important;
+  }
+}
+
 @keyframes svg-spin {
   100% { transform: rotate(360deg); }
 }
