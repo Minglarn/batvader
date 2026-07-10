@@ -76,7 +76,6 @@ function App() {
 
     ws.current.onerror = (error) => {
       console.error("WebSocket fel:", error);
-      setLoading(false);
     };
 
     ws.current.onclose = () => {
@@ -86,6 +85,16 @@ function App() {
       }, 5000);
     };
   };
+
+  // Heartbeat för att hålla Nginx-proxy anslutningen öppen
+  useEffect(() => {
+    const pingInterval = setInterval(() => {
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.send("ping");
+      }
+    }, 30000);
+    return () => clearInterval(pingInterval);
+  }, []);
 
   const [startY, setStartY] = useState(null);
   const [pullDist, setPullDist] = useState(0);
