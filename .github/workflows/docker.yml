@@ -8,8 +8,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  FRONTEND_IMAGE_NAME: ${{ github.repository }}-frontend
-  BACKEND_IMAGE_NAME: ${{ github.repository }}-backend
+  FRONTEND_IMAGE_NAME: minglarn/batvader-frontend
+  BACKEND_IMAGE_NAME: minglarn/batvader-backend
 
 jobs:
   build-and-push-frontend:
