@@ -58,6 +58,9 @@ function App() {
             {activeTab === 'DETALJERAT' && <h1>DETALJERAT (Kommer Snart)</h1>}
             {activeTab === 'PROGNOS' && <h1>PROGNOS (Kommer Snart)</h1>}
             {activeTab === 'INSTÄLLNINGAR' && <h1>INSTÄLLNINGAR (Kommer Snart)</h1>}
+            <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem' }}>
+              Väderdata levererad av SMHI
+            </footer>
           </>
         )}
       </div>

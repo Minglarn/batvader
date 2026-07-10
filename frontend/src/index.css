@@ -62,10 +62,6 @@ body {
   width: 100%;
 }
 
-.sidebar.closed .sidebar-links {
-  display: none;
-}
-
 .toggle-btn {
   background: var(--bg-card);
   color: var(--accent);
@@ -79,6 +75,10 @@ body {
   font-family: inherit;
   font-size: 0.9rem;
   transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
 }
 
 .toggle-btn:hover {
@@ -93,12 +93,30 @@ body {
   color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 600;
-  padding: 10px;
+  padding: 15px 10px;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: all 0.3s ease;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text {
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.closed .text {
+  display: none;
 }
 
 .sidebar-btn:hover {
@@ -139,7 +157,7 @@ body {
   }
 
   .sidebar.closed {
-    width: 60px;
+    width: 70px;
     height: 100%;
   }
 
@@ -150,17 +168,20 @@ body {
   .sidebar.closed .toggle-btn {
     border-right: none;
     border-bottom: 1px solid var(--border-color);
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    padding: 40px 0;
+    padding: 30px 0;
   }
   
   .sidebar-btn {
     text-align: left;
     border-top: none;
     border-left: 4px solid transparent;
-    padding: 25px 40px;
+    padding: 25px 25px;
     font-size: 1.1rem;
+    justify-content: flex-start;
+  }
+  
+  .sidebar.closed .sidebar-btn {
+    padding: 25px 20px;
   }
   
   .sidebar-btn.active {
