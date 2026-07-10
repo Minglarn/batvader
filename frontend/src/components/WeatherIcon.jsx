@@ -29,12 +29,12 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
     if (windSpeed < 3.4) {
       // Svag vind
       numArrows = 1;
-      color = "rgba(255, 255, 255, 0.4)";
-      animSpeed = "2.5s";
+      color = "rgba(255, 255, 255, 0.8)";
+      animSpeed = "2s";
     } else if (windSpeed >= 3.4 && windSpeed < 8.0) {
       // Måttlig vind
       numArrows = 2;
-      color = "rgba(255, 255, 255, 0.8)";
+      color = "rgba(255, 255, 255, 0.9)";
       animSpeed = "1.5s";
     } else if (windSpeed >= 8.0 && windSpeed < 13.9) {
       // Frisk vind
@@ -57,8 +57,8 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
 
     return (
       <g transform={`rotate(${rotation} 50 50)`}>
-        <g stroke={color} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-          <animateTransform attributeName="transform" type="translate" from="-40 0" to="40 0" dur={animSpeed} repeatCount="indefinite" />
+        <g stroke={color} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <animateTransform attributeName="transform" type="translate" from="-60 0" to="60 0" dur={animSpeed} repeatCount="indefinite" />
           <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.2;0.8;1" dur={animSpeed} repeatCount="indefinite" />
           {Array.from({ length: numArrows }).map((_, i) => {
             const yOffset = (i - (numArrows - 1) / 2) * 12;
@@ -77,7 +77,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   // 1-3: Sun
   if (code >= 1 && code <= 3) {
     return (
-      <svg className="weather-icon anim-spin-slow" viewBox="0 0 100 100" width="100%" height="100%">
+      <svg className="weather-icon" viewBox="0 0 100 100" width="100%" height="100%">
         <defs>
           <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#FFF700" stopOpacity="1" />
@@ -85,17 +85,19 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#FF5500" stopOpacity="0" />
           </radialGradient>
         </defs>
-        <circle cx="50" cy="50" r="30" fill="url(#sunGlow)" />
-        {/* Sun rays */}
-        <g stroke="#FFAA00" strokeWidth="4" strokeLinecap="round">
-          <line x1="50" y1="5" x2="50" y2="15" />
-          <line x1="50" y1="85" x2="50" y2="95" />
-          <line x1="5" y1="50" x2="15" y2="50" />
-          <line x1="85" y1="50" x2="95" y2="50" />
-          <line x1="18" y1="18" x2="25" y2="25" />
-          <line x1="75" y1="75" x2="82" y2="82" />
-          <line x1="18" y1="82" x2="25" y2="75" />
-          <line x1="75" y1="25" x2="82" y2="18" />
+        <g className="anim-spin-slow" style={{ transformOrigin: "50px 50px" }}>
+          <circle cx="50" cy="50" r="30" fill="url(#sunGlow)" />
+          {/* Sun rays */}
+          <g stroke="#FFAA00" strokeWidth="4" strokeLinecap="round">
+            <line x1="50" y1="5" x2="50" y2="15" />
+            <line x1="50" y1="85" x2="50" y2="95" />
+            <line x1="5" y1="50" x2="15" y2="50" />
+            <line x1="85" y1="50" x2="95" y2="50" />
+            <line x1="18" y1="18" x2="25" y2="25" />
+            <line x1="75" y1="75" x2="82" y2="82" />
+            <line x1="18" y1="82" x2="25" y2="75" />
+            <line x1="75" y1="25" x2="82" y2="18" />
+          </g>
         </g>
         {renderWindArrows()}
       </svg>
