@@ -4,6 +4,7 @@ import WeatherNow from './components/WeatherNow';
 import WeatherDetailed from './components/WeatherDetailed';
 import WeatherBackground from './components/WeatherBackground';
 import Settings from './components/Settings';
+import WeatherForecast from './components/WeatherForecast';
 
 const DEFAULT_LAT = 58.8986;
 const DEFAULT_LON = 17.5504;
@@ -204,7 +205,7 @@ function App() {
           <>
             {activeTab === 'NU' && <WeatherNow data={weatherData} />}
             {activeTab === 'DETALJERAT' && <WeatherDetailed data={weatherData} />}
-            {activeTab === 'PROGNOS' && <div>PROGNOS-VY KOMMER SNART</div>}
+            {activeTab === 'PROGNOS' && <WeatherForecast data={weatherData} />}
             {activeTab === 'INSTÄLLNINGAR' && <Settings theme={theme} setTheme={setTheme} />}
             <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem' }}>
               Väderdata: SMHI | Havsdata: MET Norway
