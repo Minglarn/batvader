@@ -447,6 +447,12 @@ h1 {
   }
 }
 
+@media (orientation: portrait) {
+  .weather-icon-container {
+    display: none !important;
+  }
+}
+
 /* SVG Micro Animations */
 .anim-spin-slow {
   animation: svg-spin 20s linear infinite;

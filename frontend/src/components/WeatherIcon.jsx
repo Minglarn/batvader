@@ -56,7 +56,7 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
     if (numArrows < 1) return null;
 
     return (
-      <svg className="weather-wind-icon" viewBox="0 0 100 100" overflow="visible" style={{ width: '80px', height: '100%', marginLeft: '10px' }}>
+      <svg className="weather-wind-icon" viewBox="0 0 100 100" overflow="visible" style={{ width: '80px', height: '100%', marginRight: '10px' }}>
         <g transform={`rotate(${rotation} 50 50)`}>
           <g className="anim-wind" stroke={color} style={{ animationDuration: animSpeed }} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
             {Array.from({ length: numArrows }).map((_, i) => {
@@ -133,8 +133,10 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#AAAAAA" stopOpacity="0.7" />
           </linearGradient>
         </defs>
-        <g className="anim-float">
-          <path d="M 30 60 A 15 15 0 0 1 30 30 A 20 20 0 0 1 70 35 A 15 15 0 0 1 70 60 Z" fill="url(#cloudGlow)" />
+        <g transform="translate(0, 5)">
+          <g className="anim-float">
+            <path d="M 30 60 A 15 15 0 0 1 30 30 A 20 20 0 0 1 70 35 A 15 15 0 0 1 70 60 Z" fill="url(#cloudGlow)" />
+          </g>
         </g>
       </svg>
     );
@@ -150,13 +152,15 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#444444" stopOpacity="0.9" />
           </linearGradient>
         </defs>
-        <g className="anim-float">
-          <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#darkCloud)" />
-        </g>
-        <g stroke="#00E5FF" strokeWidth="2" strokeLinecap="round" className="anim-rain">
-          <line x1="40" y1="55" x2="35" y2="70" />
-          <line x1="55" y1="50" x2="50" y2="65" />
-          <line x1="70" y1="55" x2="65" y2="70" />
+        <g transform="translate(0, 5)">
+          <g className="anim-float">
+            <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#darkCloud)" />
+          </g>
+          <g stroke="#00E5FF" strokeWidth="2" strokeLinecap="round" className="anim-rain">
+            <line x1="40" y1="55" x2="35" y2="70" />
+            <line x1="55" y1="50" x2="50" y2="65" />
+            <line x1="70" y1="55" x2="65" y2="70" />
+          </g>
         </g>
       </svg>
     );
@@ -172,11 +176,13 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#222222" stopOpacity="1" />
           </linearGradient>
         </defs>
-        <g className="anim-float">
-          <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#thunderCloud)" />
-        </g>
-        <g className="anim-flash" fill="#FFF700">
-          <polygon points="55,45 45,65 52,65 42,90 60,60 52,60" />
+        <g transform="translate(0, 5)">
+          <g className="anim-float">
+            <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#thunderCloud)" />
+          </g>
+          <g className="anim-flash" fill="#FFF700">
+            <polygon points="55,45 45,65 52,65 42,90 60,60 52,60" />
+          </g>
         </g>
       </svg>
     );
@@ -192,14 +198,16 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
             <stop offset="100%" stopColor="#999999" stopOpacity="0.8" />
           </linearGradient>
         </defs>
-        <g className="anim-float">
-          <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#snowCloud)" />
-        </g>
-        <g className="anim-snow" fill="#FFFFFF">
-          <circle cx="40" cy="65" r="3" />
-          <circle cx="60" cy="60" r="2.5" />
-          <circle cx="50" cy="75" r="3.5" />
-          <circle cx="70" cy="70" r="2" />
+        <g transform="translate(0, 5)">
+          <g className="anim-float">
+            <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#snowCloud)" />
+          </g>
+          <g className="anim-snow" fill="#FFFFFF">
+            <circle cx="40" cy="65" r="3" />
+            <circle cx="60" cy="60" r="2.5" />
+            <circle cx="50" cy="75" r="3.5" />
+            <circle cx="70" cy="70" r="2" />
+          </g>
         </g>
       </svg>
     );
@@ -216,8 +224,8 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-      {weatherSvg}
       {renderWindArrows()}
+      {weatherSvg}
     </div>
   );
 };
