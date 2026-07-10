@@ -133,11 +133,18 @@ async def websocket_endpoint(websocket: WebSocket, lat: float = DEFAULT_LAT, lon
         if latest:
             await websocket.send_text(latest.data)
             
+        print(f"[{datetime.datetime.now()}] WebSocket connected, entering wait loop for {lat},{lon}")
         while True:
             # Håll connection öppen
-            await websocket.receive_text()
+            msg = await websocket.receive_text()
+            if msg == "ping":
+                await websocket.send_text(json.dumps({"type": "pong"}))
             
     except WebSocketDisconnect:
+        print(f"[{datetime.datetime.now()}] Client disconnected from WebSocket.")
+        manager.disconnect(websocket)
+    except Exception as e:
+        print(f"[{datetime.datetime.now()}] CRITICAL WEBSOCKET ERROR: {e}")
         manager.disconnect(websocket)
     finally:
         db.close()
