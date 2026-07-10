@@ -258,12 +258,6 @@ h1 {
 
 @media (min-width: 768px) {
   .info-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1200px) {
-  .info-grid {
     grid-template-columns: repeat(5, 1fr);
   }
 }

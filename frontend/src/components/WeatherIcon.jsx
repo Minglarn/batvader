@@ -56,83 +56,83 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
     if (numArrows < 1) return null;
 
     return (
-      <g transform={`rotate(${rotation} 50 50)`}>
-        <g className="anim-wind" stroke={color} style={{ animationDuration: animSpeed }} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
-          {Array.from({ length: numArrows }).map((_, i) => {
-            const yOffset = (i - (numArrows - 1) / 2) * 12;
-            return (
-              <g key={i} transform={`translate(0, ${yOffset})`}>
-                <line x1="30" y1="50" x2="70" y2="50" />
-                <polyline points="60,45 70,50 60,55" />
-              </g>
-            );
-          })}
+      <svg className="weather-wind-icon" viewBox="0 0 100 100" overflow="visible" style={{ width: '80px', height: '100%', marginLeft: '10px' }}>
+        <g transform={`rotate(${rotation} 50 50)`}>
+          <g className="anim-wind" stroke={color} style={{ animationDuration: animSpeed }} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            {Array.from({ length: numArrows }).map((_, i) => {
+              const yOffset = (i - (numArrows - 1) / 2) * 12;
+              return (
+                <g key={i} transform={`translate(0, ${yOffset})`}>
+                  <line x1="30" y1="50" x2="70" y2="50" />
+                  <polyline points="60,45 70,50 60,55" />
+                </g>
+              );
+            })}
+          </g>
         </g>
-      </g>
+      </svg>
     );
   };
 
   const currentHour = new Date().getHours();
   const isNight = currentHour >= 22 || currentHour <= 4;
+  let weatherSvg = null;
 
   // 1-3: Sun or Moon
   if (code >= 1 && code <= 3) {
     if (isNight) {
-      return (
-        <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
+      weatherSvg = (
+        <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" style={{ height: '100%', width: 'auto', aspectRatio: '1/1' }}>
           <defs>
             <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#E0E0FF" stopOpacity="0.8" />
               <stop offset="100%" stopColor="#A0A0FF" stopOpacity="0" />
             </radialGradient>
           </defs>
-          {renderWindArrows()}
           <g className="anim-float">
             <circle cx="50" cy="50" r="25" fill="url(#moonGlow)" />
             <path d="M 60 35 A 20 20 0 1 0 60 65 A 25 25 0 1 1 60 35 Z" fill="#E0E0FF" />
           </g>
         </svg>
       );
-    }
-    return (
-      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
-        <defs>
-          <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FFF700" stopOpacity="1" />
-            <stop offset="70%" stopColor="#FFAA00" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#FF5500" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        {renderWindArrows()}
-        <g className="anim-spin-slow" style={{ transformOrigin: "50px 50px" }}>
-          <circle cx="50" cy="50" r="30" fill="url(#sunGlow)" />
-          {/* Sun rays */}
-          <g stroke="#FFAA00" strokeWidth="4" strokeLinecap="round">
-            <line x1="50" y1="5" x2="50" y2="15" />
-            <line x1="50" y1="85" x2="50" y2="95" />
-            <line x1="5" y1="50" x2="15" y2="50" />
-            <line x1="85" y1="50" x2="95" y2="50" />
-            <line x1="18" y1="18" x2="25" y2="25" />
-            <line x1="75" y1="75" x2="82" y2="82" />
-            <line x1="18" y1="82" x2="25" y2="75" />
-            <line x1="75" y1="25" x2="82" y2="18" />
+    } else {
+      weatherSvg = (
+        <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" style={{ height: '100%', width: 'auto', aspectRatio: '1/1' }}>
+          <defs>
+            <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#FFF700" stopOpacity="1" />
+              <stop offset="70%" stopColor="#FFAA00" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#FF5500" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <g className="anim-spin-slow" style={{ transformOrigin: "50px 50px" }}>
+            <circle cx="50" cy="50" r="30" fill="url(#sunGlow)" />
+            <g stroke="#FFAA00" strokeWidth="4" strokeLinecap="round">
+              <line x1="50" y1="5" x2="50" y2="15" />
+              <line x1="50" y1="85" x2="50" y2="95" />
+              <line x1="5" y1="50" x2="15" y2="50" />
+              <line x1="85" y1="50" x2="95" y2="50" />
+              <line x1="18" y1="18" x2="25" y2="25" />
+              <line x1="75" y1="75" x2="82" y2="82" />
+              <line x1="18" y1="82" x2="25" y2="75" />
+              <line x1="75" y1="25" x2="82" y2="18" />
+            </g>
           </g>
-        </g>
-      </svg>
-    );
+        </svg>
+      );
+    }
   }
 
   // 4-7: Clouds
-  if (code >= 4 && code <= 7) {
-    return (
-      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
+  else if (code >= 4 && code <= 7) {
+    weatherSvg = (
+      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" style={{ height: '100%', width: 'auto', aspectRatio: '1/1' }}>
         <defs>
           <linearGradient id="cloudGlow" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.9" />
             <stop offset="100%" stopColor="#AAAAAA" stopOpacity="0.7" />
           </linearGradient>
         </defs>
-        {renderWindArrows()}
         <g className="anim-float">
           <path d="M 30 60 A 15 15 0 0 1 30 30 A 20 20 0 0 1 70 35 A 15 15 0 0 1 70 60 Z" fill="url(#cloudGlow)" />
         </g>
@@ -141,16 +141,15 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   }
 
   // 8-10, 18-20: Rain
-  if ((code >= 8 && code <= 10) || (code >= 18 && code <= 20)) {
-    return (
-      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
+  else if ((code >= 8 && code <= 10) || (code >= 18 && code <= 20)) {
+    weatherSvg = (
+      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" style={{ height: '100%', width: 'auto', aspectRatio: '1/1' }}>
         <defs>
           <linearGradient id="darkCloud" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#777777" stopOpacity="0.9" />
             <stop offset="100%" stopColor="#444444" stopOpacity="0.9" />
           </linearGradient>
         </defs>
-        {renderWindArrows()}
         <g className="anim-float">
           <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#darkCloud)" />
         </g>
@@ -164,16 +163,15 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   }
 
   // 11, 21: Thunder
-  if (code === 11 || code === 21) {
-    return (
-      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" width="100%" height="100%">
+  else if (code === 11 || code === 21) {
+    weatherSvg = (
+      <svg className="weather-icon" viewBox="0 0 100 100" overflow="visible" style={{ height: '100%', width: 'auto', aspectRatio: '1/1' }}>
         <defs>
           <linearGradient id="thunderCloud" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#555555" stopOpacity="1" />
             <stop offset="100%" stopColor="#222222" stopOpacity="1" />
           </linearGradient>
         </defs>
-        {renderWindArrows()}
         <g className="anim-float">
           <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#thunderCloud)" />
         </g>
@@ -185,16 +183,15 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   }
 
   // 12-17, 22-27: Snow
-  if ((code >= 12 && code <= 17) || (code >= 22 && code <= 27)) {
-    return (
-      <svg className="weather-icon" viewBox="0 0 100 100" width="100%" height="100%">
+  else if ((code >= 12 && code <= 17) || (code >= 22 && code <= 27)) {
+    weatherSvg = (
+      <svg className="weather-icon" viewBox="0 0 100 100" style={{ height: '100%', width: 'auto', aspectRatio: '1/1' }}>
          <defs>
           <linearGradient id="snowCloud" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#DDDDDD" stopOpacity="0.9" />
             <stop offset="100%" stopColor="#999999" stopOpacity="0.8" />
           </linearGradient>
         </defs>
-        {renderWindArrows()}
         <g className="anim-float">
           <path d="M 30 50 A 15 15 0 0 1 30 20 A 20 20 0 0 1 70 25 A 15 15 0 0 1 70 50 Z" fill="url(#snowCloud)" />
         </g>
@@ -209,10 +206,19 @@ const WeatherIcon = ({ symbolCode, windSpeed, windDir }) => {
   }
 
   // Fallback (unknown code)
+  else {
+    weatherSvg = (
+      <svg className="weather-icon" viewBox="0 0 100 100" style={{ height: '100%', width: 'auto', aspectRatio: '1/1' }}>
+        <circle cx="50" cy="50" r="20" fill="var(--text-secondary)" opacity="0.3" />
+      </svg>
+    );
+  }
+
   return (
-    <svg className="weather-icon" viewBox="0 0 100 100" width="100%" height="100%">
-      <circle cx="50" cy="50" r="20" fill="var(--text-secondary)" opacity="0.3" />
-    </svg>
+    <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+      {weatherSvg}
+      {renderWindArrows()}
+    </div>
   );
 };
 
