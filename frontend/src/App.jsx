@@ -10,6 +10,15 @@ function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState({ lat: DEFAULT_LAT, lon: DEFAULT_LON });
   const [loading, setLoading] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -46,10 +55,43 @@ function App() {
     return () => clearInterval(interval);
   }, [location]);
 
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.warn(`Kunde inte starta fullskärm: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
   return (
     <div className="app-container">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="main-content">
+      <div className="main-content" style={{ position: 'relative' }}>
+        <button 
+          onClick={toggleFullScreen} 
+          style={{ 
+            position: 'absolute', 
+            top: '30px', 
+            right: '30px', 
+            background: 'var(--bg-card)', 
+            color: 'var(--accent)', 
+            border: '1px solid var(--border-color)', 
+            padding: '10px 15px', 
+            borderRadius: '8px', 
+            cursor: 'pointer', 
+            zIndex: 100,
+            textTransform: 'uppercase',
+            fontWeight: '600',
+            letterSpacing: '1px',
+            fontSize: '0.8rem'
+          }}
+        >
+          {isFullscreen ? 'Stäng fullskärm' : 'Fullskärm'}
+        </button>
         {loading && !weatherData ? (
           <h1>LADDAR DATA...</h1>
         ) : (
