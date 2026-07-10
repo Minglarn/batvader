@@ -14,6 +14,7 @@ services:
     environment:
       - TZ=Europe/Stockholm
       - PYTHONUNBUFFERED=1
+      - PYTHONIOENCODING=utf-8
     ports:
       - "8000:8000"
     volumes:
