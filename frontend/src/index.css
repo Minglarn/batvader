@@ -433,14 +433,16 @@ h1 {
 }
 
 .weather-icon-container {
-  width: 120px;
+  min-width: 120px;
   height: 120px;
   filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.2));
+  display: flex;
+  justify-content: flex-end;
 }
 
 @media (min-width: 768px) {
   .weather-icon-container {
-    width: 180px;
+    min-width: 180px;
     height: 180px;
   }
 }
