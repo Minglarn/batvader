@@ -1,5 +1,8 @@
 # Båtväder
 
+> [!WARNING]
+> **Pre-release:** Detta är en tidig version av applikationen. Den är under aktiv utveckling och kommer med all sannolikhet att innehålla buggar och ofullständiga funktioner.
+
 Båtväder är den enda app du behöver för att kolla om vädret är OK när du ska ut på sjön. Applikationen är anpassad för marina miljöer med högkontrast-design för att vara tydligt läsbar i starkt solljus.
 
 ## Teknikstack
@@ -32,7 +35,7 @@ services:
   backend:
     image: ghcr.io/minglarn/batvader-backend:latest
     ports:
-      - "8000:8000"
+      - "8090:8000"
     volumes:
       - sqlite_data:/app/data
 
