@@ -13,10 +13,14 @@ Båtväder är den enda app du behöver för att kolla om vädret är OK när du
 
 ## Funktioner
 
+- **Realtidsväder ("NU"-vy)**: Visar detaljerad väder- och havsinformation (SMHI + MET Norway) för din exakta position.
+- **Prognos**: Timme-för-timme väderprognos (10 timmar per vy) med smidig navigering framåt och bakåt.
+- **Detaljvy**: Klickbar prognos som öppnar en interaktiv modal med all väderdata för den valda timmen.
+- **Dynamiska väderikoner**: Ikonerna visar sol eller måne baserat på en matematisk beräkning (`suncalc`) av soluppgång och solnedgång utifrån dina GPS-koordinater.
+- **AI-Analys (Kommande)**: Appen är förberedd med en dedikerad vy för framtida smarta AI-sammanfattningar av väderomslag.
 - **Bakgrundshämtning**: Backend hämtar väderdata automatiskt varje hel timme från SMHI:s API för sparade positioner.
-- **Platstjänster**: Frontend frågar efter användarens position och ber backend om väder för den specifika platsen. Om ingen plats kan bestämmas används Trosa som standard.
-- **Offlinesparande**: Databasen sparas utanför containern så att historik bevaras över omstarter.
-- **Responsivt**: Appen känner av om den körs på en mobil (stående, navigering i botten) eller surfplatta (liggande, navigering till vänster).
+- **Platstjänster**: Frontend frågar efter användarens position. Om ingen plats kan bestämmas används Trosa som standard.
+- **Responsivt och Snyggt**: Fullt responsiv UI designad för marina miljöer (hög kontrast, mörkt/oled-tema, glassmorphism) som känner av om den körs på mobil eller surfplatta.
 
 ## Starta med Docker
 
