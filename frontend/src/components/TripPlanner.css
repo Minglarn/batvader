@@ -1,0 +1,84 @@
+.trip-planner-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .trip-planner-container {
+    flex-direction: row;
+  }
+  .trip-planner-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .trip-planner-main {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.ai-markdown-content {
+  text-align: left;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.ai-markdown-content h1, .ai-markdown-content h2, .ai-markdown-content h3 {
+  color: var(--accent);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.ai-markdown-content h1:first-child, .ai-markdown-content h2:first-child, .ai-markdown-content h3:first-child {
+  margin-top: 0;
+}
+
+.ai-markdown-content p {
+  margin-bottom: 1em;
+}
+
+.ai-markdown-content ul, .ai-markdown-content ol {
+  margin-bottom: 1em;
+  padding-left: 20px;
+}
+
+.ai-markdown-content li {
+  margin-bottom: 0.5em;
+}
+
+.ai-markdown-content a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.ai-markdown-content a:hover {
+  text-decoration: underline;
+}
+
+.ai-markdown-content strong {
+  color: var(--text-primary);
+}
+
+.trip-planner-select {
+  width: 100%;
+  padding: 10px;
+  background: #111111; /* Fallback */
+  background: var(--bg-surface);
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  outline: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.trip-planner-select option {
+  background: #111111;
+  color: #ffffff;
+}
