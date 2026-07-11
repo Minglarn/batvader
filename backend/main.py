@@ -66,13 +66,30 @@ def fetch_weather_data(lat: float, lon: float):
                     hour["data"] = {}
                 hour["data"]["sea_water_temperature"] = details.get("sea_water_temperature", "-")
                 hour["data"]["ocean_wave_height"] = details.get("sea_surface_wave_height", "-")
-                hour["data"]["ocean_wave_direction"] = details.get("sea_surface_wave_from_direction", "-")
-                hour["data"]["ocean_velocity"] = details.get("sea_water_speed", "-")
-                hour["data"]["ocean_direction"] = details.get("sea_water_to_direction", "-")
+                # Vi tar bort ocean_velocity och ocean_direction för att spara plats, ersätts av vattenstånd i frontend
         print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: MET Norway data hämtad och inbakad.", flush=True)
     except Exception as e:
         print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta ocean data från MET Norway: {e}", flush=True)
         
+    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: SMHI Vattenstånd...", flush=True)
+    try:
+        oc_res = requests.get('https://opendata-download-ocobs.smhi.se/api/version/latest/parameter/14.json', timeout=10)
+        oc_res.raise_for_status()
+        stations = [s for s in oc_res.json().get('station', []) if s.get('active')]
+        if stations:
+            closest_station = min(stations, key=lambda s: haversine_distance(lat, lon, s['latitude'], s['longitude']))
+            st_id = closest_station['id']
+            st_name = closest_station['name']
+            data_res = requests.get(f'https://opendata-download-ocobs.smhi.se/api/version/1.0/parameter/14/station/{st_id}/period/latest-hour/data.json', timeout=10)
+            data_res.raise_for_status()
+            val_list = data_res.json().get('value', [])
+            if val_list:
+                water_level = val_list[-1]['value']
+                smhi_data["water_level"] = {"value": water_level, "station": st_name}
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SMHI Vattenstånd hämtat.", flush=True)
+    except Exception as e:
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta vattenstånd från SMHI: {e}", flush=True)
+
     smhi_data["location_name"] = get_location_name(lat, lon)
     return smhi_data
 

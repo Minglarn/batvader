@@ -29,10 +29,9 @@ function WeatherNow({ data, location }) {
   // Ocean data (MET Norway Oceanforecast 2.0)
   const waveHeight = getParam('ocean_wave_height');
   const waveDirection = getParam('ocean_wave_direction');
-  const oceanVelocity = getParam('ocean_velocity');
-  const oceanDirection = getParam('ocean_direction');
   const seaWaterTemp = getParam('sea_water_temperature');
-
+  const waterLevel = data.water_level?.value;
+  const waterStation = data.water_level?.station;
   // Temperaturfärg: blå (kallt) -> grön (svalt) -> gul -> orange -> röd (hett)
   const getTempColor = (val) => {
     if (!isValid(val)) return 'var(--text-primary)';
@@ -149,11 +148,14 @@ function WeatherNow({ data, location }) {
         </div>
 
         <div className="info-card">
-          <div className="info-card-title">Ström</div>
-          <div className="info-card-value" style={{marginTop: 'auto'}}>
-            {isValid(oceanDirection) ? <span style={{display: 'inline-block', transform: `rotate(${oceanDirection}deg)`}}>↓</span> : 'N/A'}
+          <div className="info-card-title">Vattenstånd</div>
+          <div className="info-card-value" style={{marginTop: 'auto', color: waterLevel !== undefined && waterLevel !== null ? (waterLevel > 0 ? '#48cae4' : waterLevel < 0 ? '#ef233c' : 'var(--text-primary)') : 'var(--text-primary)'}}>
+            {waterLevel !== undefined && waterLevel !== null ? (waterLevel > 0 ? `+${waterLevel}` : waterLevel) : 'N/A'}
+            {waterLevel !== undefined && waterLevel !== null && <span style={{fontSize: '1rem'}}> cm</span>}
           </div>
-          <div className="info-card-subtext">{isValid(oceanVelocity) ? `${oceanVelocity} m/s` : 'N/A'}</div>
+          <div className="info-card-subtext" style={{ fontSize: '0.7rem' }}>
+            {waterStation ? `Station: ${waterStation}` : 'N/A'}
+          </div>
         </div>
 
         <div className="info-card">
