@@ -324,7 +324,24 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
         res.raise_for_status()
         ai_response = res.json()
         text = ai_response["choices"][0]["message"]["content"]
-        return {"result": text}
+        
+        # Tvätta bort eventuell markdown-formatering från LLM
+        if text.startswith("```json"):
+            text = text[7:]
+        elif text.startswith("```"):
+            text = text[3:]
+            
+        if text.endswith("```"):
+            text = text[:-3]
+            
+        text = text.strip()
+        try:
+            parsed_json = json.loads(text)
+            return {"result": parsed_json}
+        except json.JSONDecodeError:
+            print(f"Failed to parse JSON from AI: {text}", flush=True)
+            return {"error": "AI-modellen svarade inte i förväntat JSON format.", "raw": text}
+            
     except Exception as e:
         print(f"[{datetime.datetime.now()}] Error calling AI: {e}", flush=True)
         return {"error": f"Kunde inte generera AI-prognos: Misslyckades att kontakta AI-motorn."}
