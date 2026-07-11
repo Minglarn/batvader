@@ -124,7 +124,7 @@ async def lifespan(app: FastAPI):
     print("===========================================================================================\n", flush=True)
     
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(update_weather_job, 'cron', minute=0)
+    scheduler.add_job(update_weather_job, 'cron', minute=1)
     scheduler.start()
     
     # Kör alltid en datahämtning vid start
