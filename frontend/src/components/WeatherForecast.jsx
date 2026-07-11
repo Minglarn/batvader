@@ -74,7 +74,7 @@ function WeatherForecast({ data, location }) {
       <div className="info-grid">
         {forecastData.map((hour, index) => {
           const time = new Date(hour.time);
-          const timeStr = time.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+          const timeStr = `${time.toLocaleDateString('sv-SE', { weekday: 'short' })} ${time.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}`;
           const temp = getParam(hour, 'air_temperature');
           const wind = getParam(hour, 'wind_speed');
           const gust = getParam(hour, 'wind_speed_of_gust');
