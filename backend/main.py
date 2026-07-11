@@ -367,7 +367,7 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
                         
                 full_text = full_text.strip()
                 try:
-                    parsed_json = json.loads(full_text)
+                    parsed_json = json.loads(full_text, strict=False)
                     data_dir = "/app/data" if os.path.exists("/app/data") else os.path.dirname(__file__)
                     plan_path = os.path.join(data_dir, "latest_plan.json")
                     with open(plan_path, "w", encoding="utf-8") as f:
