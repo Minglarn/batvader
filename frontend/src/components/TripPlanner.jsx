@@ -6,6 +6,7 @@ function TripPlanner({ data, location }) {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [loading, setLoading] = useState(false);
+  const [tokenCount, setTokenCount] = useState(0);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
@@ -26,6 +27,7 @@ function TripPlanner({ data, location }) {
     
     setError(null);
     setLoading(true);
+    setTokenCount(0);
     setResult(null);
     
     try {
@@ -58,10 +60,7 @@ function TripPlanner({ data, location }) {
             try {
               const resData = JSON.parse(line);
               if (resData.status === 'progress') {
-                // Update a hypothetical state, or we can just update a DOM element if we had a ref.
-                // Since we don't have a loadingText state, let's use document.getElementById or add a state.
-                const btn = document.getElementById('ai-generate-btn');
-                if (btn) btn.innerText = `Genererar... (${resData.tokens} tokens)`;
+                setTokenCount(resData.tokens);
               } else if (resData.status === 'done') {
                 setResult(resData.result);
               } else if (resData.status === 'error' || resData.error) {
@@ -78,8 +77,6 @@ function TripPlanner({ data, location }) {
       setError("Ett fel uppstod vid kommunikation med backend.");
     } finally {
       setLoading(false);
-      const btn = document.getElementById('ai-generate-btn');
-      if (btn) btn.innerText = 'Generera AI-Prognos';
     }
   };
 
@@ -193,7 +190,15 @@ function TripPlanner({ data, location }) {
       </div>
 
       <div className="trip-planner-main">
-        {result && result.prognos ? (
+        {loading ? (
+          <div className="info-card no-hover" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
+            <h3 style={{ color: 'var(--accent)', marginBottom: '20px' }}>Bearbetar prognos...</h3>
+            <div style={{ width: '80%', height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px', overflow: 'hidden', position: 'relative' }}>
+               <div className="loading-bar-fill" style={{ width: '100%', height: '100%', background: 'linear-gradient(90deg, var(--accent) 0%, #00b4d8 50%, var(--accent) 100%)', backgroundSize: '200% 100%' }} />
+            </div>
+            <p style={{ marginTop: '15px', fontSize: '0.9rem', opacity: 0.7 }}>Tänker... ({tokenCount} tokens genererade)</p>
+          </div>
+        ) : result && result.prognos ? (
           <div className="info-card no-hover" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left', overflowY: 'auto', maxHeight: '600px' }}>
             <div className="ai-markdown-content">
               <ReactMarkdown>{result.prognos}</ReactMarkdown>

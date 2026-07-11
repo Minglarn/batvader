@@ -82,3 +82,12 @@
   background: #111111;
   color: #ffffff;
 }
+
+@keyframes loading-bar-anim {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.loading-bar-fill {
+  animation: loading-bar-anim 2s infinite linear;
+}
