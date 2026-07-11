@@ -57,12 +57,18 @@ def fetch_weather_data(lat: float, lon: float):
         ocean_data = res.json()
         ts = ocean_data.get("properties", {}).get("timeseries", [])
         if ts:
-            details = ts[0].get("data", {}).get("instant", {}).get("details", {})
-            smhi_data["timeSeries"][0]["data"]["sea_water_temperature"] = details.get("sea_water_temperature", "-")
-            smhi_data["timeSeries"][0]["data"]["ocean_wave_height"] = details.get("sea_surface_wave_height", "-")
-            smhi_data["timeSeries"][0]["data"]["ocean_wave_direction"] = details.get("sea_surface_wave_from_direction", "-")
-            smhi_data["timeSeries"][0]["data"]["ocean_velocity"] = details.get("sea_water_speed", "-")
-            smhi_data["timeSeries"][0]["data"]["ocean_direction"] = details.get("sea_water_to_direction", "-")
+            ocean_map = {item["time"]: item.get("data", {}).get("instant", {}).get("details", {}) for item in ts if "time" in item}
+            for hour in smhi_data.get("timeSeries", []):
+                t = hour.get("validTime")
+                details = ocean_map.get(t, {})
+                if "data" not in hour:
+                    hour["data"] = {}
+                hour["data"]["sea_water_temperature"] = details.get("sea_water_temperature", "-")
+                hour["data"]["ocean_wave_height"] = details.get("sea_surface_wave_height", "-")
+                hour["data"]["ocean_wave_direction"] = details.get("sea_surface_wave_from_direction", "-")
+                hour["data"]["ocean_velocity"] = details.get("sea_water_speed", "-")
+                hour["data"]["ocean_direction"] = details.get("sea_water_to_direction", "-")
+                hour["time"] = t  # Se till att frontend kan använda 'time'
         print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: MET Norway data hämtad och inbakad.", flush=True)
     except Exception as e:
         print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta ocean data från MET Norway: {e}", flush=True)
