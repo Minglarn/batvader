@@ -248,6 +248,20 @@ class TripPlanRequest(BaseModel):
     start_time: str
     end_time: str
 
+def to_swedish_time(iso_str):
+    try:
+        import zoneinfo
+        if iso_str.endswith('Z'):
+            iso_str = iso_str[:-1] + '+00:00'
+        dt = datetime.datetime.fromisoformat(iso_str)
+        try:
+            dt_swe = dt.astimezone(zoneinfo.ZoneInfo("Europe/Stockholm"))
+        except Exception:
+            dt_swe = dt + datetime.timedelta(hours=2) # Fallback till svensk sommartid om tzdata saknas
+        return dt_swe.strftime("%Y-%m-%d %H:%M")
+    except Exception:
+        return iso_str
+
 @app.post("/api/plan-trip")
 def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
     latest = db.query(models.WeatherData)\
@@ -260,33 +274,26 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
         
     data = json.loads(latest.data)
     
-    trip_data = []
-    in_trip = False
-    for hour in data.get('timeSeries', []):
-        t = hour.get('time')
-        if t == req.start_time:
-            in_trip = True
+    filtered_series = []
+    for s in data.get('timeSeries', []):
+        t = s.get('time', "")
+        if req.start_time <= t <= req.end_time:
+            filtered_series.append(s)
             
-        if in_trip:
-            trip_data.append(hour)
-            
-        if t == req.end_time:
-            break
-            
-    if not trip_data:
-         return {"error": "Kunde inte hitta väderdata för angiven tidsperiod."}
+    if not filtered_series:
+        return {"error": "Kunde inte hitta väderdata för angiven tidsperiod."}
          
     weather_summary = ""
-    for hour in trip_data:
-        t = hour.get('time', 'Okänd tid')
-        hdata = hour.get('data', {})
+    for s in filtered_series:
+        t = s.get('time', 'Okänd tid')
+        t_swe = to_swedish_time(t)
+        hdata = s.get('data', {})
         
         temp = hdata.get('air_temperature', 'N/A')
         wind = hdata.get('wind_speed', 'N/A')
         gust = hdata.get('wind_speed_of_gust', 'N/A')
         wave = hdata.get('ocean_wave_height', 'N/A')
         
-        # Determine rain
         rain = hdata.get('precipitation_amount_mean', 0)
         try:
             rain_val = float(rain)
@@ -294,7 +301,6 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
         except:
             rain_str = "Uppehåll"
             
-        # Determine thunder risk
         thunder = hdata.get('tstm', 0)
         try:
             thunder_val = float(thunder)
@@ -302,20 +308,23 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
         except:
             thunder_str = "Ingen"
         
-        weather_summary += f"Tid: {t}, Temp: {temp}C, Vind: {wind} m/s (byar {gust} m/s), Nederbörd: {rain_str}, Vågor: {wave} m, Åska: {thunder_str}\n"
+        weather_summary += f"Tid: {t_swe}, Temp: {temp}C, Vind: {wind} m/s (byar {gust} m/s), Nederbörd: {rain_str}, Vågor: {wave} m, Åska: {thunder_str}\n"
         
     system_prompt = "Du är en maritim AI-assistent och expert på båtväder. Du svarar på svenska."
-    user_prompt = f"Här är väderdata:\n{weather_summary}"
     
     prompt_path = "/app/data/prompt.json"
     if not os.path.exists(prompt_path):
         prompt_path = os.path.join(os.path.dirname(__file__), "prompt.json")
+    
+    user_prompt = f"Här är väderdata:\n{weather_summary}"
     if os.path.exists(prompt_path):
         try:
             with open(prompt_path, "r", encoding="utf-8") as f:
                 p_data = json.load(f)
                 system_prompt = p_data.get("system_prompt", system_prompt)
-                user_prompt = p_data.get("user_prompt_prefix", "") + f"\n\nOBS! Utresan sker kl: {req.start_time} och hemresan sker kl: {req.end_time}. Anta INTE att hemresan sker på kvällen om tiden inte anger det.\n\nVäderdata för perioden:\n" + weather_summary
+                start_swe = to_swedish_time(req.start_time)
+                end_swe = to_swedish_time(req.end_time)
+                user_prompt = p_data.get("user_prompt_prefix", "") + f"\n\nOBS! Utresan sker kl: {start_swe} och hemresan sker kl: {end_swe}. Anta INTE att hemresan sker på kvällen om tiden inte anger det.\n\nVäderdata för perioden:\n" + weather_summary
         except Exception as e:
             print(f"Kunde inte läsa prompt.json: {e}")
     
