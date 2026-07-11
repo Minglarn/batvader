@@ -617,3 +617,9 @@ h1 {
   94% { opacity: 0.08; }
   98% { opacity: 0.12; }
 }
+
+.info-card.no-hover:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
