@@ -53,6 +53,25 @@ function TripPlanner({ data, location }) {
     }
   };
 
+  React.useEffect(() => {
+    const fetchLatestPlan = async () => {
+      try {
+        const response = await fetch('/api/plan-trip/latest');
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.result) {
+            setResult(data.result);
+            if (data.start_time) setStartTime(data.start_time);
+            if (data.end_time) setEndTime(data.end_time);
+          }
+        }
+      } catch (err) {
+        console.error("Kunde inte hämta sparad prognos:", err);
+      }
+    };
+    fetchLatestPlan();
+  }, []);
+
   const formatTime = (isoString) => {
     const d = new Date(isoString);
     return `${d.toLocaleDateString('sv-SE', {weekday: 'short'})} ${d.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}`;
@@ -62,10 +81,6 @@ function TripPlanner({ data, location }) {
     <div className="trip-planner-container" style={{ padding: '20px' }}>
       
       <div className="trip-planner-sidebar">
-        <h2 style={{ marginTop: 0, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center' }}>
-          Planera Resa
-        </h2>
-        
         <div className="info-card" style={{ padding: '20px', marginBottom: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <div>

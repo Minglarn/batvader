@@ -337,6 +337,12 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
         text = text.strip()
         try:
             parsed_json = json.loads(text)
+            
+            # Spara ner på disk så den finns kvar
+            plan_path = os.path.join(os.path.dirname(__file__), "latest_plan.json")
+            with open(plan_path, "w", encoding="utf-8") as f:
+                json.dump({"result": parsed_json, "start_time": req.start_time, "end_time": req.end_time}, f, ensure_ascii=False)
+                
             return {"result": parsed_json}
         except json.JSONDecodeError:
             print(f"Failed to parse JSON from AI: {text}", flush=True)
@@ -345,4 +351,15 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
     except Exception as e:
         print(f"[{datetime.datetime.now()}] Error calling AI: {e}", flush=True)
         return {"error": f"Kunde inte generera AI-prognos: Misslyckades att kontakta AI-motorn."}
+
+@app.get("/api/plan-trip/latest")
+def get_latest_plan():
+    plan_path = os.path.join(os.path.dirname(__file__), "latest_plan.json")
+    if os.path.exists(plan_path):
+        try:
+            with open(plan_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            pass
+    return {}
 
