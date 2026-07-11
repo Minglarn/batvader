@@ -1,6 +1,8 @@
 import contextlib
 from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
+import os
 import requests
 import models
 from database import engine, get_db, SessionLocal
@@ -233,3 +235,78 @@ def get_weather(lat: float = DEFAULT_LAT, lon: float = DEFAULT_LON, db: Session 
     if latest:
         return json.loads(latest.data)
     return {"error": "Data ej tillgänglig"}
+
+class TripPlanRequest(BaseModel):
+    lat: float
+    lon: float
+    start_time: str
+    end_time: str
+
+@app.post("/api/plan-trip")
+def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
+    latest = db.query(models.WeatherData)\
+        .filter(models.WeatherData.latitude == req.lat, models.WeatherData.longitude == req.lon)\
+        .order_by(models.WeatherData.timestamp.desc())\
+        .first()
+    
+    if not latest:
+        return {"error": "Ingen väderdata hittades för denna plats."}
+        
+    data = json.loads(latest.data)
+    
+    trip_data = []
+    in_trip = False
+    for hour in data.get('timeSeries', []):
+        t = hour.get('time')
+        if t == req.start_time:
+            in_trip = True
+            
+        if in_trip:
+            trip_data.append(hour)
+            
+        if t == req.end_time:
+            break
+            
+    if not trip_data:
+         return {"error": "Kunde inte hitta väderdata för angiven tidsperiod."}
+         
+    weather_summary = ""
+    for hour in trip_data:
+        t = hour['time']
+        params = {p['name']: p['values'][0] for p in hour.get('parameters', [])}
+        temp = params.get('t', 'N/A')
+        wind = params.get('ws', 'N/A')
+        gust = params.get('gust', 'N/A')
+        wave = hour.get('data', {}).get('ocean_wave_height', 'N/A')
+        
+        # Determine rain
+        rain = params.get('pmean', 0)
+        rain_str = f"{rain} mm" if rain > 0 else "Uppehåll"
+        
+        weather_summary += f"Tid: {t}, Temp: {temp}C, Vind: {wind} m/s (byar {gust} m/s), Nederbörd: {rain_str}, Vågor: {wave} m\n"
+        
+    system_prompt = "Du är en maritim AI-assistent och expert på båtväder. Du svarar på svenska. Din uppgift är att ge en koncis men detaljerad bedömning för en planerad båtresa baserat på väderdatan."
+    
+    user_prompt = f"Jag planerar en båtresa för nedanstående tidpunkt. Ge mig en prognos för resan, uppmärksamma mig på om det blåser upp, om det blir regn eller höga vågor. Bedöm generellt om resan ser säker ut eller om det kräver försiktighet.\n\nVäderdata:\n{weather_summary}"
+    
+    lmstudio_url = os.environ.get("LMSTUDIO_URL", "http://192.168.1.239:11434/api/v0")
+    lmstudio_model = os.environ.get("LMSTUDIO_MODEL", "qwen/qwen3.5-9b")
+    
+    try:
+        payload = {
+            "model": lmstudio_model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            "temperature": 0.3
+        }
+        res = requests.post(f"{lmstudio_url}/chat/completions", json=payload, timeout=40)
+        res.raise_for_status()
+        ai_response = res.json()
+        text = ai_response["choices"][0]["message"]["content"]
+        return {"result": text}
+    except Exception as e:
+        print(f"[{datetime.datetime.now()}] Error calling AI: {e}", flush=True)
+        return {"error": f"Kunde inte generera AI-prognos: Misslyckades att kontakta AI-motorn."}
+

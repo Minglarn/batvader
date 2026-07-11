@@ -14,7 +14,7 @@ const icons = {
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
     </svg>
   ),
-  DETALJERAT: (
+  PLANERA: (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="8" y1="6" x2="21" y2="6"></line>
       <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -60,7 +60,7 @@ function Sidebar({ activeTab, setActiveTab }) {
     return saved !== null ? JSON.parse(saved) : true;
   });
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const tabs = ['NU', 'DETALJERAT', 'PROGNOS', 'INSTÄLLNINGAR'];
+  const tabs = ['NU', 'PLANERA', 'PROGNOS', 'INSTÄLLNINGAR'];
 
   useEffect(() => {
     const handleFullscreenChange = () => {

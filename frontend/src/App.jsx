@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './components/Sidebar';
 import WeatherNow from './components/WeatherNow';
-import WeatherDetailed from './components/WeatherDetailed';
+import TripPlanner from './components/TripPlanner';
 import WeatherBackground from './components/WeatherBackground';
 import Settings from './components/Settings';
 import WeatherForecast from './components/WeatherForecast';
@@ -207,8 +207,8 @@ function App() {
         ) : (
           <>
             {activeTab === 'NU' && <WeatherNow data={weatherData} location={location} />}
-            {activeTab === 'DETALJERAT' && <WeatherDetailed data={weatherData} location={location} />}
             {activeTab === 'PROGNOS' && <WeatherForecast data={weatherData} location={location} />}
+            {activeTab === 'PLANERA' && <TripPlanner data={weatherData} location={location} />}
             {activeTab === 'INSTÄLLNINGAR' && <Settings theme={theme} setTheme={setTheme} />}
             <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem' }}>
               Väderdata: SMHI | Havsdata: MET Norway
