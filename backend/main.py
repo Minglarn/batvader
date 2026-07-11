@@ -59,7 +59,7 @@ def fetch_weather_data(lat: float, lon: float):
         if ts:
             ocean_map = {item["time"]: item.get("data", {}).get("instant", {}).get("details", {}) for item in ts if "time" in item}
             for hour in smhi_data.get("timeSeries", []):
-                t = hour.get("validTime")
+                t = hour.get("time")
                 details = ocean_map.get(t, {})
                 if "data" not in hour:
                     hour["data"] = {}
@@ -68,7 +68,6 @@ def fetch_weather_data(lat: float, lon: float):
                 hour["data"]["ocean_wave_direction"] = details.get("sea_surface_wave_from_direction", "-")
                 hour["data"]["ocean_velocity"] = details.get("sea_water_speed", "-")
                 hour["data"]["ocean_direction"] = details.get("sea_water_to_direction", "-")
-                hour["time"] = t  # Se till att frontend kan använda 'time'
         print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: MET Norway data hämtad och inbakad.", flush=True)
     except Exception as e:
         print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta ocean data från MET Norway: {e}", flush=True)
@@ -278,22 +277,36 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
          
     weather_summary = ""
     for hour in trip_data:
-        t = hour['time']
-        params = {p['name']: p['values'][0] for p in hour.get('parameters', [])}
-        temp = params.get('t', 'N/A')
-        wind = params.get('ws', 'N/A')
-        gust = params.get('gust', 'N/A')
-        wave = hour.get('data', {}).get('ocean_wave_height', 'N/A')
+        t = hour.get('time', 'Okänd tid')
+        hdata = hour.get('data', {})
+        
+        temp = hdata.get('air_temperature', 'N/A')
+        wind = hdata.get('wind_speed', 'N/A')
+        gust = hdata.get('wind_speed_of_gust', 'N/A')
+        wave = hdata.get('ocean_wave_height', 'N/A')
         
         # Determine rain
-        rain = params.get('pmean', 0)
-        rain_str = f"{rain} mm" if rain > 0 else "Uppehåll"
+        rain = hdata.get('precipitation_amount_mean', 0)
+        try:
+            rain_val = float(rain)
+            rain_str = f"{rain_val} mm" if rain_val > 0 else "Uppehåll"
+        except:
+            rain_str = "Uppehåll"
         
         weather_summary += f"Tid: {t}, Temp: {temp}C, Vind: {wind} m/s (byar {gust} m/s), Nederbörd: {rain_str}, Vågor: {wave} m\n"
         
-    system_prompt = "Du är en maritim AI-assistent och expert på båtväder. Du svarar på svenska. Din uppgift är att ge en koncis men detaljerad bedömning för en planerad båtresa baserat på väderdatan."
+    system_prompt = "Du är en maritim AI-assistent och expert på båtväder. Du svarar på svenska."
+    user_prompt = f"Här är väderdata:\n{weather_summary}"
     
-    user_prompt = f"Jag planerar en båtresa för nedanstående tidpunkt. Ge mig en prognos för resan, uppmärksamma mig på om det blåser upp, om det blir regn eller höga vågor. Bedöm generellt om resan ser säker ut eller om det kräver försiktighet.\n\nVäderdata:\n{weather_summary}"
+    prompt_path = os.path.join(os.path.dirname(__file__), "prompt.json")
+    if os.path.exists(prompt_path):
+        try:
+            with open(prompt_path, "r", encoding="utf-8") as f:
+                p_data = json.load(f)
+                system_prompt = p_data.get("system_prompt", system_prompt)
+                user_prompt = p_data.get("user_prompt_prefix", "") + weather_summary
+        except Exception as e:
+            print(f"Kunde inte läsa prompt.json: {e}")
     
     lmstudio_url = os.environ.get("LMSTUDIO_URL", "http://192.168.1.239:11434/api/v0")
     lmstudio_model = os.environ.get("LMSTUDIO_MODEL", "qwen/qwen3.5-9b")
