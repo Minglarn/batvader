@@ -292,8 +292,16 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
             rain_str = f"{rain_val} mm" if rain_val > 0 else "Uppehåll"
         except:
             rain_str = "Uppehåll"
+            
+        # Determine thunder risk
+        thunder = hdata.get('tstm', 0)
+        try:
+            thunder_val = float(thunder)
+            thunder_str = f"{thunder_val}% risk" if thunder_val > 0 else "Ingen"
+        except:
+            thunder_str = "Ingen"
         
-        weather_summary += f"Tid: {t}, Temp: {temp}C, Vind: {wind} m/s (byar {gust} m/s), Nederbörd: {rain_str}, Vågor: {wave} m\n"
+        weather_summary += f"Tid: {t}, Temp: {temp}C, Vind: {wind} m/s (byar {gust} m/s), Nederbörd: {rain_str}, Vågor: {wave} m, Åska: {thunder_str}\n"
         
     system_prompt = "Du är en maritim AI-assistent och expert på båtväder. Du svarar på svenska."
     user_prompt = f"Här är väderdata:\n{weather_summary}"
