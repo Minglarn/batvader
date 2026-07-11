@@ -2,7 +2,15 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.trip-planner-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (min-width: 768px) {
@@ -12,12 +20,6 @@
   .trip-planner-sidebar {
     width: 320px;
     flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .trip-planner-main {
-    flex-grow: 1;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
   }
