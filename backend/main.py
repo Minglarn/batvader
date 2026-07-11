@@ -248,6 +248,8 @@ class TripPlanRequest(BaseModel):
     start_time: str
     end_time: str
 
+SWE_WEEKDAYS = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"]
+
 def to_swedish_time(iso_str):
     try:
         import zoneinfo
@@ -258,7 +260,9 @@ def to_swedish_time(iso_str):
             dt_swe = dt.astimezone(zoneinfo.ZoneInfo("Europe/Stockholm"))
         except Exception:
             dt_swe = dt + datetime.timedelta(hours=2) # Fallback till svensk sommartid om tzdata saknas
-        return dt_swe.strftime("%Y-%m-%d %H:%M")
+            
+        wd = SWE_WEEKDAYS[dt_swe.weekday()]
+        return f"{wd} {dt_swe.strftime('%Y-%m-%d %H:%M')}"
     except Exception:
         return iso_str
 
@@ -328,9 +332,11 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
                 # Fetch current time in Swedish TZ for context
                 try:
                     import zoneinfo
-                    now_swe = datetime.datetime.now(zoneinfo.ZoneInfo("Europe/Stockholm")).strftime("%Y-%m-%d %H:%M")
+                    now_dt = datetime.datetime.now(zoneinfo.ZoneInfo("Europe/Stockholm"))
                 except:
-                    now_swe = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                    now_dt = datetime.datetime.now()
+                
+                now_swe = f"{SWE_WEEKDAYS[now_dt.weekday()]} {now_dt.strftime('%Y-%m-%d %H:%M')}"
                 
                 user_prompt = p_data.get("user_prompt_prefix", "") + f"\n\nVIKTIG INFO TILL DIG:\n- Nuvarande datum och tid är: {now_swe}\n- Utresan planeras till: {start_swe}\n- Hemresan planeras till: {end_swe}\n\nKRAV PÅ DITT SVAR:\n1. Du MÅSTE jämföra resans datum med dagens datum. Om resan sker en annan dag än idag, SKA du tydligt inleda med att skriva ut rätt datum i klartext (t.ex. 'Imorgon den 12 juli...' eller 'På lördag den 15:e...'). Använd INTE hakparenteser som [datum] utan skriv det faktiska datumet! Du får absolut INTE skriva 'Idag' om utresan sker ett annat datum!\n2. Anta INTE att hemresan sker på kvällen om tiden inte anger det.\n\nVäderdata för perioden:\n" + weather_summary
         except Exception as e:
