@@ -312,7 +312,7 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
             with open(prompt_path, "r", encoding="utf-8") as f:
                 p_data = json.load(f)
                 system_prompt = p_data.get("system_prompt", system_prompt)
-                user_prompt = p_data.get("user_prompt_prefix", "") + weather_summary
+                user_prompt = p_data.get("user_prompt_prefix", "") + f"\n\nOBS! Utresan sker kl: {req.start_time} och hemresan sker kl: {req.end_time}. Anta INTE att hemresan sker på kvällen om tiden inte anger det.\n\nVäderdata för perioden:\n" + weather_summary
         except Exception as e:
             print(f"Kunde inte läsa prompt.json: {e}")
     
