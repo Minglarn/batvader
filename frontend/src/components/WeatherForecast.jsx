@@ -112,17 +112,6 @@ function WeatherForecast({ data, location }) {
           );
         })}
       </div>
-      <div className="info-card" style={{ marginTop: '30px', padding: '20px', textAlign: 'left', width: '100%', borderLeft: '4px solid var(--accent)' }}>
-        <h3 style={{ fontSize: '1rem', color: 'var(--accent)', marginTop: 0, marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-          </svg>
-          AI-Analys
-        </h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>
-          Den AI-drivna väderprognosen och trendanalysen integreras här inom kort. Här kommer du få en smart sammanfattning av de mest väsentliga väderförändringarna att tänka på.
-        </p>
-      </div>
 
       <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
         Uppdaterat: {data.referenceTime ? new Date(data.referenceTime).toLocaleString('sv-SE') : 'Okänt'}
