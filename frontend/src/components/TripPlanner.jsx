@@ -127,7 +127,7 @@ function TripPlanner({ data, location }) {
 
       <div className="trip-planner-main">
         {result ? (
-          <div className="info-card" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <div className="info-card" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left' }}>
             <div className="ai-markdown-content" style={{ flexGrow: 1 }}>
               <ReactMarkdown>{result}</ReactMarkdown>
             </div>
