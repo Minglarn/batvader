@@ -10,6 +10,7 @@ import json
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import datetime
 import math
+import re
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -334,15 +335,15 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
         ai_response = res.json()
         text = ai_response["choices"][0]["message"]["content"]
         
-        # Tvätta bort eventuell markdown-formatering från LLM
-        if text.startswith("```json"):
-            text = text[7:]
-        elif text.startswith("```"):
-            text = text[3:]
-            
-        if text.endswith("```"):
-            text = text[:-3]
-            
+        # Tvätta bort eventuell markdown-formatering och extra text från LLM
+        json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', text, re.DOTALL)
+        if json_match:
+            text = json_match.group(1)
+        else:
+            brace_match = re.search(r'(\{.*\})', text, re.DOTALL)
+            if brace_match:
+                text = brace_match.group(1)
+                
         text = text.strip()
         try:
             parsed_json = json.loads(text)
