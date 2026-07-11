@@ -144,20 +144,20 @@ function TripPlanner({ data, location }) {
               disabled={loading}
               style={{ 
                 marginTop: '10px',
-                padding: '15px', 
-                background: 'var(--accent)', 
-                color: 'black', 
-                border: 'none', 
+                padding: '15px',
+                backgroundColor: 'var(--accent)',
+                color: '#000000',
+                border: 'none',
                 borderRadius: '8px',
-                fontWeight: 'bold',
                 fontSize: '1.1rem',
+                fontWeight: 'bold',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 opacity: loading ? 0.7 : 1,
-                transition: 'all 0.2s ease',
-                width: '100%'
+                transition: 'all 0.2s',
+                boxShadow: '0 4px 15px rgba(0, 240, 255, 0.3)'
               }}
             >
-              {loading ? 'Genererar prognos...' : 'Generera AI-Prognos'}
+              {loading ? (tokenCount > 0 ? `Genererar... (${tokenCount} tokens)` : 'Genererar prognos...') : 'Generera AI-Prognos'}
             </button>
           </div>
         </div>
@@ -189,26 +189,27 @@ function TripPlanner({ data, location }) {
         )}
       </div>
 
-      <div className="trip-planner-main">
-        {loading ? (
-          <div className="info-card no-hover" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
-            <h3 style={{ color: 'var(--accent)', marginBottom: '20px' }}>Bearbetar prognos...</h3>
-            <div style={{ width: '80%', height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px', overflow: 'hidden', position: 'relative' }}>
-               <div className="loading-bar-fill" style={{ width: '100%', height: '100%', background: 'linear-gradient(90deg, var(--accent) 0%, #00b4d8 50%, var(--accent) 100%)', backgroundSize: '200% 100%' }} />
-            </div>
-            <p style={{ marginTop: '15px', fontSize: '0.9rem', opacity: 0.7 }}>Tänker... ({tokenCount} tokens genererade)</p>
-          </div>
-        ) : result && result.prognos ? (
-          <div className="info-card no-hover" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left', overflowY: 'auto', maxHeight: '600px' }}>
+      <div className="trip-planner-main" style={{ minHeight: 0 }}>
+        {result && result.prognos && !loading ? (
+          <div className="info-card no-hover" style={{ padding: '30px', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left', overflowY: 'auto', minHeight: 0 }}>
             <div className="ai-markdown-content">
               <ReactMarkdown>{result.prognos}</ReactMarkdown>
             </div>
           </div>
         ) : (
-          <div className="info-card no-hover" style={{ padding: '30px', flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
+          <div className="info-card no-hover" style={{ padding: '30px', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', minHeight: 0 }}>
             <div style={{ textAlign: 'center', maxWidth: '400px' }}>
-              <h3 style={{ color: 'var(--accent)', marginBottom: '15px' }}>Redo att ge dig av?</h3>
-              <p style={{ lineHeight: '1.6' }}>Välj när du planerar att kasta loss och när du förväntar dig att vara framme. Jag analyserar väderdatan åt dig och ger en rekommendation på om det är en säker rutt!</p>
+              {loading ? (
+                 <>
+                   <h3 style={{ color: 'var(--accent)', marginBottom: '15px' }}>Bearbetar prognos...</h3>
+                   <p style={{ lineHeight: '1.6' }}>Vänta medan AI:n analyserar vind, vågor och temperaturer för din valda tidsperiod.</p>
+                 </>
+              ) : (
+                 <>
+                   <h3 style={{ color: 'var(--accent)', marginBottom: '15px' }}>Redo att ge dig av?</h3>
+                   <p style={{ lineHeight: '1.6' }}>Välj när du planerar att kasta loss och när du förväntar dig att vara framme. Jag analyserar väderdatan åt dig och ger en rekommendation på om det är en säker rutt!</p>
+                 </>
+              )}
             </div>
           </div>
         )}
