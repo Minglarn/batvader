@@ -122,14 +122,34 @@ function TripPlanner({ data, location }) {
               {error}
             </div>
           )}
+          
+          {result && result.status && (
+            <div style={{ marginTop: '20px', padding: '15px', border: '2px solid #2dc653', borderRadius: '8px', background: 'rgba(45,198,83,0.1)' }}>
+              <h3 style={{ margin: '0 0 10px 0', color: '#2dc653', textTransform: 'uppercase', fontSize: '1rem' }}>Status</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>VIND:</span>
+                  <span style={{ fontWeight: 'bold', color: result.status.vind === 'OK' ? '#2dc653' : result.status.vind === 'VARNING' ? '#ff4444' : '#f7b801' }}>{result.status.vind || 'N/A'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>TEMP:</span>
+                  <span style={{ fontWeight: 'bold', color: result.status.temp === 'OK' ? '#2dc653' : result.status.temp === 'KALLT' ? '#8ecae6' : '#ff4444' }}>{result.status.temp || 'N/A'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>VÅGOR:</span>
+                  <span style={{ fontWeight: 'bold', color: result.status.vagor === 'OK' ? '#2dc653' : result.status.vagor === 'VARNING' ? '#ff4444' : '#f7b801' }}>{result.status.vagor || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="trip-planner-main">
-        {result ? (
-          <div className="info-card" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left' }}>
-            <div className="ai-markdown-content" style={{ flexGrow: 1 }}>
-              <ReactMarkdown>{result}</ReactMarkdown>
+        {result && result.prognos ? (
+          <div className="info-card" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left', overflowY: 'auto' }}>
+            <div className="ai-markdown-content">
+              <ReactMarkdown>{result.prognos}</ReactMarkdown>
             </div>
           </div>
         ) : (
