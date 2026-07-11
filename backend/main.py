@@ -333,6 +333,7 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
             "stream": True
         }
         try:
+            print(f"[{datetime.datetime.now()}] Anropar AI-modell ({lmstudio_model}) via ström...", flush=True)
             with requests.post(f"{lmstudio_url}/chat/completions", json=payload, timeout=60, stream=True) as res:
                 res.raise_for_status()
                 token_count = 0
@@ -351,6 +352,8 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
                                         yield json.dumps({"status": "progress", "tokens": token_count}) + "\n"
                             except Exception:
                                 pass
+                
+                print(f"[{datetime.datetime.now()}] AI-ström avslutad. Genererade totalt ca {token_count} tokens.", flush=True)
                 
                 # När strömmen är klar, extrahera JSON och spara
                 import re
