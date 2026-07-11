@@ -322,47 +322,63 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
     lmstudio_url = os.environ.get("LMSTUDIO_URL", "http://192.168.1.239:11434/api/v0")
     lmstudio_model = os.environ.get("LMSTUDIO_MODEL", "qwen/qwen3.5-9b")
     
-    try:
+    def generate():
         payload = {
             "model": lmstudio_model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            "temperature": 0.3
+            "temperature": 0.3,
+            "stream": True
         }
-        res = requests.post(f"{lmstudio_url}/chat/completions", json=payload, timeout=40)
-        res.raise_for_status()
-        ai_response = res.json()
-        text = ai_response["choices"][0]["message"]["content"]
-        
-        # Tvätta bort eventuell markdown-formatering och extra text från LLM
-        json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', text, re.DOTALL)
-        if json_match:
-            text = json_match.group(1)
-        else:
-            brace_match = re.search(r'(\{.*\})', text, re.DOTALL)
-            if brace_match:
-                text = brace_match.group(1)
-                
-        text = text.strip()
         try:
-            parsed_json = json.loads(text)
-            
-            # Spara ner på disk så den finns kvar
-            data_dir = "/app/data" if os.path.exists("/app/data") else os.path.dirname(__file__)
-            plan_path = os.path.join(data_dir, "latest_plan.json")
-            with open(plan_path, "w", encoding="utf-8") as f:
-                json.dump({"result": parsed_json, "start_time": req.start_time, "end_time": req.end_time}, f, ensure_ascii=False)
+            with requests.post(f"{lmstudio_url}/chat/completions", json=payload, timeout=60, stream=True) as res:
+                res.raise_for_status()
+                token_count = 0
+                full_text = ""
+                for line in res.iter_lines():
+                    if line:
+                        line_str = line.decode('utf-8')
+                        if line_str.startswith("data: ") and line_str != "data: [DONE]":
+                            try:
+                                chunk = json.loads(line_str[6:])
+                                delta = chunk["choices"][0]["delta"].get("content", "")
+                                if delta:
+                                    full_text += delta
+                                    token_count += 1
+                                    if token_count % 5 == 0:
+                                        yield json.dumps({"status": "progress", "tokens": token_count}) + "\n"
+                            except Exception:
+                                pass
                 
-            return {"result": parsed_json}
-        except json.JSONDecodeError:
-            print(f"Failed to parse JSON from AI: {text}", flush=True)
-            return {"error": "AI-modellen svarade inte i förväntat JSON format.", "raw": text}
-            
-    except Exception as e:
-        print(f"[{datetime.datetime.now()}] Error calling AI: {e}", flush=True)
-        return {"error": f"Kunde inte generera AI-prognos: Misslyckades att kontakta AI-motorn."}
+                # När strömmen är klar, extrahera JSON och spara
+                import re
+                json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', full_text, re.DOTALL)
+                if json_match:
+                    full_text = json_match.group(1)
+                else:
+                    brace_match = re.search(r'(\{.*\})', full_text, re.DOTALL)
+                    if brace_match:
+                        full_text = brace_match.group(1)
+                        
+                full_text = full_text.strip()
+                try:
+                    parsed_json = json.loads(full_text)
+                    data_dir = "/app/data" if os.path.exists("/app/data") else os.path.dirname(__file__)
+                    plan_path = os.path.join(data_dir, "latest_plan.json")
+                    with open(plan_path, "w", encoding="utf-8") as f:
+                        json.dump({"result": parsed_json, "start_time": req.start_time, "end_time": req.end_time}, f, ensure_ascii=False)
+                    yield json.dumps({"status": "done", "result": parsed_json}) + "\n"
+                except json.JSONDecodeError:
+                    print(f"Failed to parse JSON from AI: {full_text}", flush=True)
+                    yield json.dumps({"status": "error", "error": "AI-modellen svarade inte i förväntat JSON format.", "raw": full_text}) + "\n"
+        except Exception as e:
+            print(f"[{datetime.datetime.now()}] Error calling AI: {e}", flush=True)
+            yield json.dumps({"status": "error", "error": f"Kunde inte generera AI-prognos: Misslyckades att kontakta AI-motorn."}) + "\n"
+
+    from fastapi.responses import StreamingResponse
+    return StreamingResponse(generate(), media_type="application/x-ndjson")
 
 @app.get("/api/plan-trip/latest")
 def get_latest_plan():

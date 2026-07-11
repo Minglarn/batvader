@@ -40,16 +40,46 @@ function TripPlanner({ data, location }) {
         })
       });
       
-      const resData = await response.json();
-      if (resData.error) {
-        setError(resData.error);
-      } else {
-        setResult(resData.result);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let buffer = '';
+      
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || ''; // Keep the incomplete line in the buffer
+          
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            try {
+              const resData = JSON.parse(line);
+              if (resData.status === 'progress') {
+                // Update a hypothetical state, or we can just update a DOM element if we had a ref.
+                // Since we don't have a loadingText state, let's use document.getElementById or add a state.
+                const btn = document.getElementById('ai-generate-btn');
+                if (btn) btn.innerText = `Genererar... (${resData.tokens} tokens)`;
+              } else if (resData.status === 'done') {
+                setResult(resData.result);
+              } else if (resData.status === 'error' || resData.error) {
+                setError(resData.error || "Ett fel uppstod.");
+              }
+            } catch (err) {
+              console.error("Fel vid parsning av ström:", err);
+            }
+          }
+        }
       }
+      
     } catch (err) {
       setError("Ett fel uppstod vid kommunikation med backend.");
     } finally {
       setLoading(false);
+      const btn = document.getElementById('ai-generate-btn');
+      if (btn) btn.innerText = 'Generera AI-Prognos';
     }
   };
 
@@ -112,6 +142,7 @@ function TripPlanner({ data, location }) {
             </div>
             
             <button 
+              id="ai-generate-btn"
               onClick={handlePlanTrip}
               disabled={loading}
               style={{ 
