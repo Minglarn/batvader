@@ -332,7 +332,7 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
                 except:
                     now_swe = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
                 
-                user_prompt = p_data.get("user_prompt_prefix", "") + f"\n\nVIKTIG INFO TILL DIG:\n- Nuvarande datum och tid är: {now_swe}\n- Utresan planeras till: {start_swe}\n- Hemresan planeras till: {end_swe}\n\nKRAV PÅ DITT SVAR:\n1. Du MÅSTE jämföra resans datum med dagens datum. Om resan sker imorgon eller en annan dag, SKA du tydligt inleda med t.ex. 'Imorgon den [datum]...' eller 'På [veckodag] den [datum]...'. Du får absolut INTE skriva 'Idag' om utresan sker ett annat datum!\n2. Anta INTE att hemresan sker på kvällen om tiden inte anger det.\n\nVäderdata för perioden:\n" + weather_summary
+                user_prompt = p_data.get("user_prompt_prefix", "") + f"\n\nVIKTIG INFO TILL DIG:\n- Nuvarande datum och tid är: {now_swe}\n- Utresan planeras till: {start_swe}\n- Hemresan planeras till: {end_swe}\n\nKRAV PÅ DITT SVAR:\n1. Du MÅSTE jämföra resans datum med dagens datum. Om resan sker en annan dag än idag, SKA du tydligt inleda med att skriva ut rätt datum i klartext (t.ex. 'Imorgon den 12 juli...' eller 'På lördag den 15:e...'). Använd INTE hakparenteser som [datum] utan skriv det faktiska datumet! Du får absolut INTE skriva 'Idag' om utresan sker ett annat datum!\n2. Anta INTE att hemresan sker på kvällen om tiden inte anger det.\n\nVäderdata för perioden:\n" + weather_summary
         except Exception as e:
             print(f"Kunde inte läsa prompt.json: {e}")
     
