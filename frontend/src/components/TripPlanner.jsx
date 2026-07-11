@@ -81,8 +81,8 @@ function TripPlanner({ data, location }) {
     <div className="trip-planner-container" style={{ padding: '20px' }}>
       
       <div className="trip-planner-sidebar">
-        <div className="info-card" style={{ padding: '20px', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div className="info-card no-hover" style={{ padding: '20px', marginBottom: '20px', width: '100%' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-secondary)' }}>Från tid</label>
               <select 
@@ -125,50 +125,51 @@ function TripPlanner({ data, location }) {
                 fontSize: '1.1rem',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 opacity: loading ? 0.7 : 1,
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                width: '100%'
               }}
             >
               {loading ? 'Genererar prognos...' : 'Generera AI-Prognos'}
             </button>
           </div>
+        </div>
           
-          {error && (
-            <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(255,0,0,0.2)', borderLeft: '4px solid #ff4444', color: 'white' }}>
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="info-card no-hover" style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ff4444', color: 'white', width: '100%' }}>
+            {error}
+          </div>
+        )}
           
-          {result && result.status && (
-            <div style={{ marginTop: '20px', padding: '15px', border: '2px solid #2dc653', borderRadius: '8px', background: 'rgba(45,198,83,0.1)' }}>
-              <h3 style={{ margin: '0 0 10px 0', color: '#2dc653', textTransform: 'uppercase', fontSize: '1rem' }}>Status</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>VIND:</span>
-                  <span style={{ fontWeight: 'bold', color: result.status.vind === 'OK' ? '#2dc653' : result.status.vind === 'VARNING' ? '#ff4444' : '#f7b801' }}>{result.status.vind || 'N/A'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>TEMP:</span>
-                  <span style={{ fontWeight: 'bold', color: result.status.temp === 'OK' ? '#2dc653' : result.status.temp === 'KALLT' ? '#8ecae6' : '#ff4444' }}>{result.status.temp || 'N/A'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>VÅGOR:</span>
-                  <span style={{ fontWeight: 'bold', color: result.status.vagor === 'OK' ? '#2dc653' : result.status.vagor === 'VARNING' ? '#ff4444' : '#f7b801' }}>{result.status.vagor || 'N/A'}</span>
-                </div>
+        {result && result.status && (
+          <div className="info-card no-hover" style={{ padding: '20px', width: '100%', alignItems: 'stretch' }}>
+            <h3 style={{ margin: '0 0 15px 0', color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.85rem', textAlign: 'center', letterSpacing: '1px' }}>Status</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>VIND:</span>
+                <span style={{ fontWeight: 'bold', color: result.status.vind === 'OK' ? '#2dc653' : result.status.vind === 'VARNING' ? '#ff4444' : '#f7b801' }}>{result.status.vind || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>TEMP:</span>
+                <span style={{ fontWeight: 'bold', color: result.status.temp === 'OK' ? '#2dc653' : result.status.temp === 'KALLT' ? '#8ecae6' : '#ff4444' }}>{result.status.temp || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>VÅGOR:</span>
+                <span style={{ fontWeight: 'bold', color: result.status.vagor === 'OK' ? '#2dc653' : result.status.vagor === 'VARNING' ? '#ff4444' : '#f7b801' }}>{result.status.vagor || 'N/A'}</span>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="trip-planner-main">
         {result && result.prognos ? (
-          <div className="info-card" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left', overflowY: 'auto' }}>
+          <div className="info-card no-hover" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left', overflowY: 'auto' }}>
             <div className="ai-markdown-content">
               <ReactMarkdown>{result.prognos}</ReactMarkdown>
             </div>
           </div>
         ) : (
-          <div className="info-card" style={{ padding: '30px', flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
+          <div className="info-card no-hover" style={{ padding: '30px', flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
             <div style={{ textAlign: 'center', maxWidth: '400px' }}>
               <h3 style={{ color: 'var(--accent)', marginBottom: '15px' }}>Redo att ge dig av?</h3>
               <p style={{ lineHeight: '1.6' }}>Välj när du planerar att kasta loss och när du förväntar dig att vara framme. Jag analyserar väderdatan åt dig och ger en rekommendation på om det är en säker rutt!</p>
