@@ -324,7 +324,15 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
                 system_prompt = p_data.get("system_prompt", system_prompt)
                 start_swe = to_swedish_time(req.start_time)
                 end_swe = to_swedish_time(req.end_time)
-                user_prompt = p_data.get("user_prompt_prefix", "") + f"\n\nOBS! Utresan sker kl: {start_swe} och hemresan sker kl: {end_swe}. Anta INTE att hemresan sker på kvällen om tiden inte anger det.\n\nVäderdata för perioden:\n" + weather_summary
+                
+                # Fetch current time in Swedish TZ for context
+                try:
+                    import zoneinfo
+                    now_swe = datetime.datetime.now(zoneinfo.ZoneInfo("Europe/Stockholm")).strftime("%Y-%m-%d %H:%M")
+                except:
+                    now_swe = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                
+                user_prompt = p_data.get("user_prompt_prefix", "") + f"\n\nVIKTIG INFO TILL DIG:\n- Nuvarande datum och tid är: {now_swe}\n- Utresan planeras till: {start_swe}\n- Hemresan planeras till: {end_swe}\n\nKRAV PÅ DITT SVAR:\n1. Du MÅSTE jämföra resans datum med dagens datum. Om resan sker imorgon eller en annan dag, SKA du tydligt inleda med t.ex. 'Imorgon den [datum]...' eller 'På [veckodag] den [datum]...'. Du får absolut INTE skriva 'Idag' om utresan sker ett annat datum!\n2. Anta INTE att hemresan sker på kvällen om tiden inte anger det.\n\nVäderdata för perioden:\n" + weather_summary
         except Exception as e:
             print(f"Kunde inte läsa prompt.json: {e}")
     
