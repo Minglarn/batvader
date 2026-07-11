@@ -194,7 +194,7 @@ function TripPlanner({ data, location }) {
 
       <div className="trip-planner-main">
         {result && result.prognos ? (
-          <div className="info-card no-hover" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left', overflowY: 'auto' }}>
+          <div className="info-card no-hover" style={{ padding: '30px', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left', overflowY: 'auto', maxHeight: '600px' }}>
             <div className="ai-markdown-content">
               <ReactMarkdown>{result.prognos}</ReactMarkdown>
             </div>
