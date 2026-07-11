@@ -306,7 +306,8 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
     system_prompt = "Du är en maritim AI-assistent och expert på båtväder. Du svarar på svenska."
     user_prompt = f"Här är väderdata:\n{weather_summary}"
     
-    prompt_path = os.path.join(os.path.dirname(__file__), "prompt.json")
+    data_dir = "/app/data" if os.path.exists("/app/data") else os.path.dirname(__file__)
+    prompt_path = os.path.join(data_dir, "prompt.json")
     if os.path.exists(prompt_path):
         try:
             with open(prompt_path, "r", encoding="utf-8") as f:
@@ -347,7 +348,8 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
             parsed_json = json.loads(text)
             
             # Spara ner på disk så den finns kvar
-            plan_path = os.path.join(os.path.dirname(__file__), "latest_plan.json")
+            data_dir = "/app/data" if os.path.exists("/app/data") else os.path.dirname(__file__)
+            plan_path = os.path.join(data_dir, "latest_plan.json")
             with open(plan_path, "w", encoding="utf-8") as f:
                 json.dump({"result": parsed_json, "start_time": req.start_time, "end_time": req.end_time}, f, ensure_ascii=False)
                 
@@ -362,7 +364,8 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
 
 @app.get("/api/plan-trip/latest")
 def get_latest_plan():
-    plan_path = os.path.join(os.path.dirname(__file__), "latest_plan.json")
+    data_dir = "/app/data" if os.path.exists("/app/data") else os.path.dirname(__file__)
+    plan_path = os.path.join(data_dir, "latest_plan.json")
     if os.path.exists(plan_path):
         try:
             with open(plan_path, "r", encoding="utf-8") as f:

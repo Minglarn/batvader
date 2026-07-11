@@ -2,10 +2,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-db_path = "/app/data/batvader.db"
+db_path = "/app/data/weather.db"
 # Fallback for local development outside docker
 if not os.path.exists("/app/data"):
-    db_path = "batvader.db"
+    db_path = "weather.db"
 
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
 
