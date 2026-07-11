@@ -78,7 +78,7 @@ function TripPlanner({ data, location }) {
   };
 
   return (
-    <div className="trip-planner-container" style={{ padding: '20px' }}>
+    <div className="trip-planner-container">
       
       <div className="trip-planner-sidebar">
         <div className="info-card no-hover" style={{ padding: '20px', marginBottom: '20px', width: '100%' }}>
