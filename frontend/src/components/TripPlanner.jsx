@@ -62,6 +62,11 @@ function TripPlanner({ data, location }) {
               if (resData.status === 'progress') {
                 setTokenCount(resData.tokens);
               } else if (resData.status === 'done') {
+                if (resData.result && resData.result.prognos) {
+                  // Vissa modeller flyr radbrytningar i JSON-strängar bokstavligt (skriver ut \ och n). 
+                  // Vi konverterar dem till riktiga radbrytningar för ReactMarkdown.
+                  resData.result.prognos = resData.result.prognos.replace(/\\n/g, '\n');
+                }
                 setResult(resData.result);
               } else if (resData.status === 'error' || resData.error) {
                 setError(resData.error || "Ett fel uppstod.");
