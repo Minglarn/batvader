@@ -307,8 +307,9 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
     system_prompt = "Du är en maritim AI-assistent och expert på båtväder. Du svarar på svenska."
     user_prompt = f"Här är väderdata:\n{weather_summary}"
     
-    data_dir = "/app/data" if os.path.exists("/app/data") else os.path.dirname(__file__)
-    prompt_path = os.path.join(data_dir, "prompt.json")
+    prompt_path = "/app/data/prompt.json"
+    if not os.path.exists(prompt_path):
+        prompt_path = os.path.join(os.path.dirname(__file__), "prompt.json")
     if os.path.exists(prompt_path):
         try:
             with open(prompt_path, "r", encoding="utf-8") as f:
