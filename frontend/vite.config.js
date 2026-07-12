@@ -9,12 +9,13 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      useCredentials: true,
       manifest: {
         name: 'Båtväder',
         short_name: 'Båtväder',
         description: 'Väderprognoser och AI-rekommendationer för din båtresa',
-        theme_color: '#0a0a0a',
-        background_color: '#0a0a0a',
+        theme_color: '#050505',
+        background_color: '#050505',
         display: 'standalone',
         icons: [
           {
