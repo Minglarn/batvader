@@ -21,7 +21,8 @@ body {
   color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   display: flex;
-  height: 100vh;
+  height: 100vh; /* fallback */
+  height: 100dvh;
   width: 100vw;
   overflow: hidden;
   font-size: 16px;
@@ -583,11 +584,17 @@ h1 {
 }
 
 .theme-ocean .sidebar {
-  background-color: rgba(10, 10, 15, 0.4);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  background-color: #0a0f1a; /* Solid för att dölja text bakom (Bottombar) */
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 768px) {
+  .theme-ocean .sidebar {
+    background-color: rgba(10, 10, 15, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
 }
 
 .theme-ocean .sidebar-btn {
