@@ -11,6 +11,17 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import datetime
 import math
 import re
+import logging
+
+class WsLogFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        msg = record.getMessage()
+        if "WebSocket /ws/weather" in msg or "connection open" in msg or "connection closed" in msg:
+            return False
+        return True
+
+logging.getLogger("uvicorn.access").addFilter(WsLogFilter())
+logging.getLogger("uvicorn.error").addFilter(WsLogFilter())
 
 models.Base.metadata.create_all(bind=engine)
 
