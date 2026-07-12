@@ -194,15 +194,15 @@ function TripPlanner({ data, location }) {
         )}
       </div>
 
-      <div className="trip-planner-main" style={{ minHeight: 0 }}>
+      <div className="trip-planner-main">
         {result && result.prognos && !loading ? (
-          <div className="info-card no-hover" style={{ padding: '30px', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', textAlign: 'left', overflowY: 'auto', minHeight: 0 }}>
+          <div className="info-card no-hover trip-planner-result-card">
             <div className="ai-markdown-content">
               <ReactMarkdown>{result.prognos}</ReactMarkdown>
             </div>
           </div>
         ) : (
-          <div className="info-card no-hover" style={{ padding: '30px', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', minHeight: 0 }}>
+          <div className="info-card no-hover trip-planner-empty-card">
             <div style={{ textAlign: 'center', maxWidth: '400px' }}>
               {loading ? (
                  <>
