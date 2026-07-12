@@ -16,12 +16,13 @@ import logging
 class WsLogFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         msg = record.getMessage()
-        if "WebSocket /ws/weather" in msg or "connection open" in msg or "connection closed" in msg:
+        # Filtrera bort alla ws/weather, socket.io scanning och standard connection open/closed
+        if "WebSocket /ws/weather" in msg or "WebSocket /socket.io" in msg or "connection open" in msg or "connection closed" in msg:
             return False
         return True
 
-logging.getLogger("uvicorn.access").addFilter(WsLogFilter())
-logging.getLogger("uvicorn.error").addFilter(WsLogFilter())
+for logger_name in ("uvicorn", "uvicorn.access", "uvicorn.error", "uvicorn.asgi"):
+    logging.getLogger(logger_name).addFilter(WsLogFilter())
 
 models.Base.metadata.create_all(bind=engine)
 
