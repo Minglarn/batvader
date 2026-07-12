@@ -583,9 +583,19 @@ h1 {
 }
 
 .theme-ocean .sidebar {
-  background-color: #0a0a0f; /* Solid bakgrund */
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(10, 10, 15, 0.4);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.theme-ocean .sidebar-btn {
+  color: #ffffff;
+}
+
+.theme-ocean .sidebar-btn.active {
+  color: var(--accent);
 }
 
 .theme-ocean .top-bar {
