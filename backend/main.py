@@ -144,7 +144,7 @@ async def lifespan(app: FastAPI):
     print("===========================================================================================", flush=True)
     print(f"BATVADER API SERVER STARTAR", flush=True)
     print(f"Koddagens datum: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
-    print("Version: 1.0.0 (CalVer)", flush=True)
+    print("Version: 2026.07.12", flush=True)
     print("Byggd med: FastAPI & WebSockets för 100% Live UI", flush=True)
     print("===========================================================================================\n", flush=True)
     
@@ -285,8 +285,17 @@ def to_swedish_time(iso_str):
 
 @app.post("/api/plan-trip")
 def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
+    target_lat = req.lat
+    target_lon = req.lon
+    
+    for w_lat, w_lon in watched_locations:
+        if haversine_distance(req.lat, req.lon, w_lat, w_lon) < 5:
+            target_lat = w_lat
+            target_lon = w_lon
+            break
+
     latest = db.query(models.WeatherData)\
-        .filter(models.WeatherData.latitude == req.lat, models.WeatherData.longitude == req.lon)\
+        .filter(models.WeatherData.latitude == target_lat, models.WeatherData.longitude == target_lon)\
         .order_by(models.WeatherData.timestamp.desc())\
         .first()
     
@@ -421,7 +430,12 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
             yield json.dumps({"status": "error", "error": f"Kunde inte generera AI-prognos: Misslyckades att kontakta AI-motorn."}) + "\n"
 
     from fastapi.responses import StreamingResponse
-    return StreamingResponse(generate(), media_type="application/x-ndjson")
+    headers = {
+        "X-Accel-Buffering": "no",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive"
+    }
+    return StreamingResponse(generate(), media_type="text/event-stream", headers=headers)
 
 @app.get("/api/plan-trip/latest")
 def get_latest_plan():
