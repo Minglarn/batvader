@@ -93,6 +93,11 @@ function App() {
     ws.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        if (data && data.error === "Unauthorized") {
+          localStorage.removeItem('batvader_token');
+          setToken(null);
+          return;
+        }
         if (data && data.timeSeries) {
           setWeatherData(data);
           setLoading(false);
@@ -109,7 +114,11 @@ function App() {
       setWsError(true);
     };
 
-    ws.current.onclose = () => {
+    ws.current.onclose = (event) => {
+      if (event.code === 1008) {
+        console.warn("WebSocket stängd pga ogiltig token. Avbryter återanslutning.");
+        return;
+      }
       console.warn("WebSocket stängd, försöker återansluta om 5 sek...");
       if (!weatherData) setWsError(true);
       setTimeout(() => {
