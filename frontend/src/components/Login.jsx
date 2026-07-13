@@ -39,9 +39,9 @@ function Login({ onLoginSuccess }) {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: '100vh',
+      flexGrow: 1,
       padding: '20px',
-      background: 'var(--bg-main)'
+      width: '100%'
     }}>
       <div style={{
         background: 'var(--bg-surface)',

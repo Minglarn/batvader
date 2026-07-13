@@ -160,7 +160,11 @@ function App() {
   };
 
   if (!token) {
-    return <Login onLoginSuccess={setToken} />;
+    return (
+      <div className={`app-container theme-${theme}`}>
+        <Login onLoginSuccess={setToken} />
+      </div>
+    );
   }
 
   return (
