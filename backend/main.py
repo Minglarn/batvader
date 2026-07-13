@@ -50,6 +50,7 @@ def fetch_weather_data(lat: float, lon: float):
     lon_str = f"{lon:.4f}"
     smhi_url = f"https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/{lon_str}/lat/{lat_str}/data.json"
     ocean_url = f"https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat={lat}&lon={lon}"
+    location_url = f"https://api.met.no/weatherapi/locationforecast/2.0/complete?lat={lat}&lon={lon}"
     
     smhi_data = None
     print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: SMHI API för koordinater {lat_str}, {lon_str}...", flush=True)
@@ -79,9 +80,48 @@ def fetch_weather_data(lat: float, lon: float):
                 hour["data"]["sea_water_temperature"] = details.get("sea_water_temperature", "-")
                 hour["data"]["ocean_wave_height"] = details.get("sea_surface_wave_height", "-")
                 # Vi tar bort ocean_velocity och ocean_direction för att spara plats, ersätts av vattenstånd i frontend
-        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: MET Norway data hämtad och inbakad.", flush=True)
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: MET Norway ocean data hämtad och inbakad.", flush=True)
     except Exception as e:
         print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta ocean data från MET Norway: {e}", flush=True)
+        
+    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: MET Norway Locationforecast för koordinater {lat_str}, {lon_str}...", flush=True)
+    try:
+        headers = {"User-Agent": "BatVader/1.0 github.com/Minglarn/batvader"}
+        res = requests.get(location_url, headers=headers, timeout=10)
+        res.raise_for_status()
+        location_data = res.json()
+        ts_loc = location_data.get("properties", {}).get("timeseries", [])
+        if ts_loc:
+            loc_map = {}
+            for item in ts_loc:
+                if "time" in item:
+                    details = item.get("data", {}).get("instant", {}).get("details", {})
+                    precip = None
+                    next_1 = item.get("data", {}).get("next_1_hours", {}).get("details", {})
+                    if "precipitation_amount" in next_1:
+                        precip = next_1["precipitation_amount"]
+                        
+                    loc_map[item["time"]] = {
+                        "meteo_air_temperature": details.get("air_temperature"),
+                        "meteo_wind_speed": details.get("wind_speed"),
+                        "meteo_wind_speed_of_gust": details.get("wind_speed_of_gust"),
+                        "meteo_relative_humidity": details.get("relative_humidity"),
+                        "meteo_air_pressure_at_mean_sea_level": details.get("air_pressure_at_sea_level"),
+                        "meteo_cloud_area_fraction": details.get("cloud_area_fraction"),
+                        "meteo_wind_from_direction": details.get("wind_from_direction"),
+                        "meteo_precipitation_amount_mean": precip
+                    }
+            for hour in smhi_data.get("timeSeries", []):
+                t = hour.get("time")
+                loc_details = loc_map.get(t, {})
+                if "data" not in hour:
+                    hour["data"] = {}
+                for k, v in loc_details.items():
+                    if v is not None:
+                        hour["data"][k] = v
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: MET Norway location data hämtad och inbakad.", flush=True)
+    except Exception as e:
+        print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Kunde inte hämta location data från MET Norway: {e}", flush=True)
         
     print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] HÄMTAR DATA: SMHI Vattenstånd...", flush=True)
     try:
@@ -276,6 +316,7 @@ class TripPlanRequest(BaseModel):
     lon: float
     start_time: str
     end_time: str
+    data_source: str = 'smhi'
 
 SWE_WEEKDAYS = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"]
 
@@ -331,19 +372,33 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
         t_swe = to_swedish_time(t)
         hdata = s.get('data', {})
         
-        temp = hdata.get('air_temperature', 'N/A')
-        wind = hdata.get('wind_speed', 'N/A')
-        gust = hdata.get('wind_speed_of_gust', 'N/A')
+        def get_val(key):
+            v_s = hdata.get(key)
+            v_m = hdata.get('meteo_' + key)
+            if req.data_source == 'smhi': return v_s if v_s is not None else 'N/A'
+            if req.data_source == 'meteo': return v_m if v_m is not None else (v_s if v_s is not None else 'N/A')
+            if req.data_source == 'average':
+                if v_s is not None and v_m is not None:
+                    try:
+                        return str(round((float(v_s) + float(v_m)) / 2, 1))
+                    except:
+                        return v_s
+                return v_s if v_s is not None else (v_m if v_m is not None else 'N/A')
+            return v_s if v_s is not None else 'N/A'
+        
+        temp = get_val('air_temperature')
+        wind = get_val('wind_speed')
+        gust = get_val('wind_speed_of_gust')
         wave = hdata.get('ocean_wave_height', 'N/A')
         
-        rain = hdata.get('precipitation_amount_mean', 0)
+        rain = get_val('precipitation_amount_mean')
         try:
             rain_val = float(rain)
             rain_str = f"{rain_val} mm" if rain_val > 0 else "Uppehåll"
         except:
             rain_str = "Uppehåll"
             
-        thunder = hdata.get('tstm', 0)
+        thunder = get_val('thunderstorm_probability')
         try:
             thunder_val = float(thunder)
             thunder_str = f"{thunder_val}% risk" if thunder_val > 0 else "Ingen"

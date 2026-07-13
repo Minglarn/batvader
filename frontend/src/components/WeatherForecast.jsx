@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import WeatherIcon from './WeatherIcon';
 import WeatherNow from './WeatherNow';
 
-function WeatherForecast({ data, location }) {
+function WeatherForecast({ data, location, dataSource }) {
   const [selectedHour, setSelectedHour] = useState(null);
   const [page, setPage] = useState(0);
 
@@ -21,8 +21,24 @@ function WeatherForecast({ data, location }) {
 
   const getParam = (hourData, name) => {
     try {
-      const val = hourData.data[name];
-      return val !== undefined && val !== null ? val : 'N/A';
+      const d = hourData.data;
+      const vSMHI = d[name];
+      const vMETEO = d['meteo_' + name];
+      
+      if (dataSource === 'smhi') return vSMHI !== undefined && vSMHI !== null ? vSMHI : 'N/A';
+      if (dataSource === 'meteo') return vMETEO !== undefined && vMETEO !== null ? vMETEO : (vSMHI !== undefined && vSMHI !== null ? vSMHI : 'N/A');
+      if (dataSource === 'average') {
+        const sValid = vSMHI !== undefined && vSMHI !== null && !isNaN(vSMHI);
+        const mValid = vMETEO !== undefined && vMETEO !== null && !isNaN(vMETEO);
+        if (sValid && mValid) {
+          if (name === 'symbol_code') return vSMHI;
+          const avg = (parseFloat(vSMHI) + parseFloat(vMETEO)) / 2;
+          return Math.round(avg * 10) / 10;
+        }
+        if (sValid) return vSMHI;
+        if (mValid) return vMETEO;
+      }
+      return 'N/A';
     } catch {
       return 'N/A';
     }
@@ -143,7 +159,7 @@ function WeatherForecast({ data, location }) {
             <h2 style={{marginTop: 0, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center'}}>
               {new Date(selectedHour.time).toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}
             </h2>
-            <WeatherNow data={{ timeSeries: [selectedHour], referenceTime: data.referenceTime }} location={location} />
+            <WeatherNow data={{ timeSeries: [selectedHour], referenceTime: data.referenceTime, water_level: data.water_level }} location={location} dataSource={dataSource} />
           </div>
         </div>
       )}

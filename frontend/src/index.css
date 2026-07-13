@@ -49,8 +49,13 @@ body {
 .theme-oled {
   --bg-color: #000000;
   --bg-surface: #000000;
-  --bg-card: #050505;
-  --border-color: #111111;
+  --bg-card: #080808;
+  --text-primary: #ffffff;
+  --text-secondary: #aaaaaa;
+  --accent: #00e5ff;
+  --border-color: #1a1a1a;
+  --glow: 0 0 15px rgba(0, 229, 255, 0.4);
+  color: var(--text-primary);
 }
 
 /* Sidebar (Mobile First - Bottom Nav) */

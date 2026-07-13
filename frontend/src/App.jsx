@@ -17,10 +17,17 @@ function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('batvader_theme') || 'oled';
   });
+  const [dataSource, setDataSource] = useState(() => {
+    return localStorage.getItem('batvader_datasource') || 'smhi';
+  });
 
   useEffect(() => {
     localStorage.setItem('batvader_theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('batvader_datasource', dataSource);
+  }, [dataSource]);
 
   const ws = useRef(null);
 
@@ -166,7 +173,28 @@ function App() {
             </span>
           </h2>
           {activeTab === 'NU' && weatherData && (() => {
-            const getP = (name) => { try { return weatherData.timeSeries[0].data[name]; } catch { return '-'; } };
+            const getP = (name) => { 
+              try { 
+                const d = weatherData.timeSeries[0].data;
+                const vSMHI = d[name];
+                const vMETEO = d['meteo_' + name];
+                if (dataSource === 'smhi') return vSMHI !== undefined && vSMHI !== null ? vSMHI : '-';
+                if (dataSource === 'meteo') return vMETEO !== undefined && vMETEO !== null ? vMETEO : (vSMHI !== undefined && vSMHI !== null ? vSMHI : '-');
+                if (dataSource === 'average') {
+                  const sValid = vSMHI !== undefined && vSMHI !== null && !isNaN(vSMHI);
+                  const mValid = vMETEO !== undefined && vMETEO !== null && !isNaN(vMETEO);
+                  if (sValid && mValid) {
+                    // Symbol code should not be averaged, return SMHI
+                    if (name === 'symbol_code') return vSMHI;
+                    const avg = (parseFloat(vSMHI) + parseFloat(vMETEO)) / 2;
+                    return Math.round(avg * 10) / 10;
+                  }
+                  if (sValid) return vSMHI;
+                  if (mValid) return vMETEO;
+                }
+                return '-';
+              } catch { return '-'; } 
+            };
             const sc = parseInt(getP('symbol_code'), 10);
             const ws = getP('wind_speed');
             const descs = {1:'Klart',2:'Lätt molnighet',3:'Halvklart',4:'Molnigt',5:'Mycket moln',6:'Mulet',7:'Dimma',8:'Lätt regnskur',9:'Regnskur',10:'Kraftig regnskur',11:'Åskskur',12:'Lätt by av regn/snö',13:'By av regn/snö',14:'Kraftig by av regn/snö',15:'Lätt snöby',16:'Snöby',17:'Kraftig snöby',18:'Lätt regn',19:'Regn',20:'Kraftigt regn',21:'Åska',22:'Lätt snöblandat regn',23:'Snöblandat regn',24:'Kraftigt snöblandat regn',25:'Lätt snöfall',26:'Snöfall',27:'Kraftigt snöfall'};
@@ -206,12 +234,12 @@ function App() {
           <h1 style={{textAlign: 'center', marginTop: '20vh'}}>LADDAR DATA...</h1>
         ) : (
           <>
-            {activeTab === 'NU' && <WeatherNow data={weatherData} location={location} />}
-            {activeTab === 'PROGNOS' && <WeatherForecast data={weatherData} location={location} />}
-            {activeTab === 'PLANERA' && <TripPlanner data={weatherData} location={location} />}
-            {activeTab === 'INSTÄLLNINGAR' && <Settings theme={theme} setTheme={setTheme} />}
+            {activeTab === 'NU' && <WeatherNow data={weatherData} location={location} dataSource={dataSource} />}
+            {activeTab === 'PROGNOS' && <WeatherForecast data={weatherData} location={location} dataSource={dataSource} />}
+            {activeTab === 'PLANERA' && <TripPlanner data={weatherData} location={location} dataSource={dataSource} />}
+            {activeTab === 'INSTÄLLNINGAR' && <Settings theme={theme} setTheme={setTheme} dataSource={dataSource} setDataSource={setDataSource} />}
             <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem' }}>
-              Väderdata: SMHI | Havsdata: MET Norway
+              Väderdata: {dataSource === 'smhi' ? 'SMHI' : dataSource === 'meteo' ? 'MET Norway' : 'SMHI & MET Norway'} | Havsdata: MET Norway
             </footer>
           </>
         )}

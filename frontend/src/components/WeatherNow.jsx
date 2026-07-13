@@ -1,13 +1,29 @@
 import React from 'react';
 import WeatherIcon from './WeatherIcon';
 
-function WeatherNow({ data, location }) {
+function WeatherNow({ data, location, dataSource }) {
   if (!data || data.error) return <h1>INGEN DATA TILLGÄNGLIG</h1>;
   
   const getParam = (name) => {
     try {
-      const val = data.timeSeries[0].data[name];
-      return val !== undefined && val !== null ? val : 'N/A';
+      const d = data.timeSeries[0].data;
+      const vSMHI = d[name];
+      const vMETEO = d['meteo_' + name];
+      
+      if (dataSource === 'smhi') return vSMHI !== undefined && vSMHI !== null ? vSMHI : 'N/A';
+      if (dataSource === 'meteo') return vMETEO !== undefined && vMETEO !== null ? vMETEO : (vSMHI !== undefined && vSMHI !== null ? vSMHI : 'N/A');
+      if (dataSource === 'average') {
+        const sValid = vSMHI !== undefined && vSMHI !== null && !isNaN(vSMHI);
+        const mValid = vMETEO !== undefined && vMETEO !== null && !isNaN(vMETEO);
+        if (sValid && mValid) {
+          if (name === 'symbol_code') return vSMHI; // Kan inte medelvärdesberäkna koder
+          const avg = (parseFloat(vSMHI) + parseFloat(vMETEO)) / 2;
+          return Math.round(avg * 10) / 10;
+        }
+        if (sValid) return vSMHI;
+        if (mValid) return vMETEO;
+      }
+      return 'N/A';
     } catch {
       return 'N/A';
     }
