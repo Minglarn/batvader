@@ -442,7 +442,7 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db), current_user:
         except:
             thunder_str = "Ingen"
         
-        weather_summary += f"Tid: {t_swe}, Temp: {temp}C, Vind: {wind} m/s (byar {gust} m/s), Nederbörd: {rain_str}, Vågor: {wave} m, Åska: {thunder_str}\n"
+        weather_summary += f"Tid: {t_swe}, Temp: {temp}C, Vind: {wind} m/s, Nederbörd: {rain_str}, Vågor: {wave} m, Åska: {thunder_str}\n"
         
     system_prompt = "Du är en maritim AI-assistent och expert på båtväder. Du svarar på svenska."
     
