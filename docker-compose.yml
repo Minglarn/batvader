@@ -11,7 +11,7 @@ services:
 
   backend:
     image: ghcr.io/minglarn/batvader-backend:latest
-    container_name: batliv
+    container_name: batvader
     environment:
       - TZ=Europe/Stockholm
       - PYTHONUNBUFFERED=1
