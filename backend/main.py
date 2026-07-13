@@ -1,5 +1,6 @@
 import contextlib
-from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect, HTTPException, Security
+from fastapi.security import APIKeyHeader
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import os
@@ -12,6 +13,7 @@ import datetime
 import math
 import re
 import logging
+import secrets
 
 class WsLogFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
@@ -20,6 +22,18 @@ class WsLogFilter(logging.Filter):
         if "WebSocket /ws/weather" in msg or "WebSocket /socket.io" in msg or "connection open" in msg or "connection closed" in msg:
             return False
         return True
+
+active_sessions = {}
+API_KEY_NAME = "Authorization"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+def verify_token(auth_header: str = Security(api_key_header)):
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    token = auth_header.split(" ")[1]
+    if token not in active_sessions:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return active_sessions[token]
 
 for logger_name in ("uvicorn", "uvicorn.access", "uvicorn.error", "uvicorn.asgi"):
     logging.getLogger(logger_name).addFilter(WsLogFilter())
@@ -213,6 +227,22 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+@app.post("/api/login")
+def login(req: LoginRequest):
+    users_env = os.environ.get("USERS", "").split(",")
+    passw_env = os.environ.get("PASSW", "").split(",")
+    valid_users = {u.strip(): p.strip() for u, p in zip(users_env, passw_env) if u.strip() and p.strip()}
+    
+    if req.username in valid_users and valid_users[req.username] == req.password:
+        token = secrets.token_hex(16)
+        active_sessions[token] = req.username
+        return {"token": token}
+    raise HTTPException(status_code=401, detail="Fel användarnamn eller lösenord")
+
 def haversine_distance(lat1, lon1, lat2, lon2):
     R = 6371
     dLat = math.radians(lat2 - lat1)
@@ -224,8 +254,15 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     return R * c
 
 @app.websocket("/ws/weather")
-async def websocket_endpoint(websocket: WebSocket, lat: float = DEFAULT_LAT, lon: float = DEFAULT_LON):
+async def websocket_endpoint(websocket: WebSocket, lat: float = DEFAULT_LAT, lon: float = DEFAULT_LON, token: str = None):
     await manager.connect(websocket)
+    
+    if not token or token not in active_sessions:
+        await websocket.send_text(json.dumps({"error": "Unauthorized"}))
+        await websocket.close(code=1008)
+        manager.disconnect(websocket)
+        return
+        
     db = SessionLocal()
     try:
         is_watched = False
@@ -278,7 +315,7 @@ async def websocket_endpoint(websocket: WebSocket, lat: float = DEFAULT_LAT, lon
         db.close()
 
 @app.get("/api/weather")
-def get_weather(lat: float = DEFAULT_LAT, lon: float = DEFAULT_LON, db: Session = Depends(get_db)):
+def get_weather(lat: float = DEFAULT_LAT, lon: float = DEFAULT_LON, db: Session = Depends(get_db), current_user: str = Depends(verify_token)):
     is_watched = False
     target_lat = lat
     target_lon = lon
@@ -337,7 +374,7 @@ def to_swedish_time(iso_str):
         return iso_str
 
 @app.post("/api/plan-trip")
-def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
+def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db), current_user: str = Depends(verify_token)):
     target_lat = req.lat
     target_lon = req.lon
     
@@ -505,7 +542,7 @@ def plan_trip(req: TripPlanRequest, db: Session = Depends(get_db)):
     return StreamingResponse(generate(), media_type="text/event-stream", headers=headers)
 
 @app.get("/api/plan-trip/latest")
-def get_latest_plan():
+def get_latest_plan(current_user: str = Depends(verify_token)):
     data_dir = "/app/data" if os.path.exists("/app/data") else os.path.dirname(__file__)
     plan_path = os.path.join(data_dir, "latest_plan.json")
     if os.path.exists(plan_path):

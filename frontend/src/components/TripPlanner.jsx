@@ -33,7 +33,10 @@ function TripPlanner({ data, location }) {
     try {
       const response = await fetch('/api/plan-trip', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('batvader_token')}`
+        },
         body: JSON.stringify({
           lat: location.lat,
           lon: location.lon,
@@ -88,7 +91,11 @@ function TripPlanner({ data, location }) {
   React.useEffect(() => {
     const fetchLatestPlan = async () => {
       try {
-        const response = await fetch('/api/plan-trip/latest');
+        const response = await fetch('/api/plan-trip/latest', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('batvader_token')}`
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           if (data && data.result) {

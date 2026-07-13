@@ -5,6 +5,7 @@ import TripPlanner from './components/TripPlanner';
 import WeatherBackground from './components/WeatherBackground';
 import Settings from './components/Settings';
 import WeatherForecast from './components/WeatherForecast';
+import Login from './components/Login';
 
 const DEFAULT_LAT = 58.8986;
 const DEFAULT_LON = 17.5504;
@@ -14,11 +15,15 @@ function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState({ lat: DEFAULT_LAT, lon: DEFAULT_LON });
   const [loading, setLoading] = useState(true);
+  const [wsError, setWsError] = useState(false);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('batvader_theme') || 'oled';
   });
   const [dataSource, setDataSource] = useState(() => {
     return localStorage.getItem('batvader_datasource') || 'smhi';
+  });
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem('batvader_token') || null;
   });
 
   useEffect(() => {
@@ -56,6 +61,7 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (!token) return;
     // Only connect when location is set, avoiding double calls on mount
     connectWebSocket(location.lat, location.lon, true);
     
@@ -66,7 +72,7 @@ function App() {
         ws.current.close();
       }
     };
-  }, [location.lat, location.lon]);
+  }, [location.lat, location.lon, token]);
 
   const connectWebSocket = (lat, lon, isInitial = false) => {
     if (ws.current) {
@@ -80,7 +86,7 @@ function App() {
     
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
-    const wsUrl = `${protocol}//${host}/ws/weather?lat=${lat}&lon=${lon}`;
+    const wsUrl = `${protocol}//${host}/ws/weather?lat=${lat}&lon=${lon}&token=${token}`;
     
     ws.current = new WebSocket(wsUrl);
     
@@ -90,6 +96,7 @@ function App() {
         if (data && data.timeSeries) {
           setWeatherData(data);
           setLoading(false);
+          setWsError(false);
           setPullDist(0);
         }
       } catch (err) {
@@ -99,10 +106,12 @@ function App() {
 
     ws.current.onerror = (error) => {
       console.error("WebSocket fel:", error);
+      setWsError(true);
     };
 
     ws.current.onclose = () => {
       console.warn("WebSocket stängd, försöker återansluta om 5 sek...");
+      if (!weatherData) setWsError(true);
       setTimeout(() => {
         connectWebSocket(lat, lon, false);
       }, 5000);
@@ -147,7 +156,12 @@ function App() {
     }
     setStartY(null);
     setPullDist(0);
+    setPullDist(0);
   };
+
+  if (!token) {
+    return <Login onLoginSuccess={setToken} />;
+  }
 
   return (
     <div className={`app-container theme-${theme}`}>
@@ -231,7 +245,17 @@ function App() {
           </div>
         )}
         {loading && !weatherData ? (
-          <h1 style={{textAlign: 'center', marginTop: '20vh'}}>LADDAR DATA...</h1>
+          <div style={{textAlign: 'center', marginTop: '20vh'}}>
+            <h1 style={{color: wsError ? '#ff4444' : 'var(--text-primary)'}}>
+              {wsError ? 'ANSLUTNINGSFEL' : 'LADDAR DATA...'}
+            </h1>
+            {wsError && (
+              <p style={{color: 'var(--text-secondary)', maxWidth: '300px', margin: '20px auto', lineHeight: '1.5'}}>
+                Kunde inte ansluta till servern. Försöker igen...<br/><br/>
+                Om detta fortsätter, kontrollera att mobilens IP till servern stämmer och att Windows-brandväggen tillåter port 8090.
+              </p>
+            )}
+          </div>
         ) : (
           <>
             {activeTab === 'NU' && <WeatherNow data={weatherData} location={location} dataSource={dataSource} />}

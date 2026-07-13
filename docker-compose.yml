@@ -18,6 +18,8 @@ services:
       - PYTHONIOENCODING=utf-8
       - LMSTUDIO_URL=http://192.168.1.239:11434/api/v0
       - LMSTUDIO_MODEL=qwen/qwen3.5-9b
+      - USERS=user, guest
+      - PASSW=user2026,guest2026
     ports:
       - "8000:8000"
     volumes:

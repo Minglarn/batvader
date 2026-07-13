@@ -109,10 +109,7 @@ function WeatherNow({ data, location, dataSource }) {
             {isValid(temp) ? `${temp}` : 'N/A'}
             {isValid(temp) && <span style={{ fontSize: '2rem' }}>°C</span>}
           </div>
-          <div style={{ fontSize: '0.75em', color: 'var(--text-secondary)' }}>
-            {isValid(humidity) ? humidity : 'N/A'}
-            {isValid(humidity) && <span style={{ fontSize: '2rem' }}>% Fukt</span>}
-          </div>
+
         </div>
         <div className="weather-icon-container">
           <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={data.timeSeries[0].time} lat={location?.lat} lon={location?.lon} />
