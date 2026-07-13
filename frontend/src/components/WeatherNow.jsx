@@ -75,16 +75,13 @@ function WeatherNow({ data, location, dataSource }) {
     if (!isValid(ms)) return 'N/A';
     const w = parseFloat(ms);
     if (w < 0.3) return 'Lugnt';
-    if (w < 1.6) return 'Svag vind';
-    if (w < 3.4) return 'Lätt bris';
-    if (w < 5.5) return 'God bris';
-    if (w < 8.0) return 'Frisk bris';
-    if (w < 10.8) return 'Styv bris';
-    if (w < 13.9) return 'Hård bris';
+    if (w < 3.4) return 'Svag vind';
+    if (w < 8.0) return 'Måttlig vind';
+    if (w < 13.9) return 'Frisk vind';
     if (w < 17.2) return 'Styv kuling';
     if (w < 20.8) return 'Hård kuling';
     if (w < 24.5) return 'Halv storm';
-    if (w < 28.5) return 'Storm';
+    if (w < 32.7) return 'Storm';
     return 'Orkan';
   };
   
