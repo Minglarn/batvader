@@ -85,6 +85,16 @@ function WeatherNow({ data, location, dataSource }) {
     return 'Orkan';
   };
   
+  const getGustScale = (ms) => {
+    if (!isValid(ms)) return 'N/A';
+    const w = parseFloat(ms);
+    if (w >= 32.7) return 'Orkanbyar';
+    if (w >= 24.5) return 'Stormbyar';
+    if (w >= 21.0) return 'Mycket hårda vindbyar';
+    if (w >= 14.0) return 'Hårda vindbyar';
+    return getBeaufortScale(w);
+  };
+
   const getWeatherDescription = (codeStr) => {
     const c = parseInt(codeStr, 10);
     const descriptions = {
@@ -124,7 +134,7 @@ function WeatherNow({ data, location, dataSource }) {
         <div className="info-card">
           <div className="info-card-title">Byvind</div>
           <div className="info-card-value" style={{marginTop: 'auto'}}>{isValid(gust) ? gust : 'N/A'}{isValid(gust) && <span style={{fontSize: '1rem'}}>m/s</span>}</div>
-          <div className="info-card-subtext">{getBeaufortScale(gust)}</div>
+          <div className="info-card-subtext">{getGustScale(gust)}</div>
         </div>
         
         <div className="info-card">
