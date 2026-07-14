@@ -112,13 +112,13 @@ function WeatherNow({ data, location, dataSource }) {
   const getSeaStateStyle = (windSpeed) => {
     const w = parseFloat(windSpeed);
     if (isNaN(w) || w < 4) { 
-      return { top: '0%', left: '0%' };
+      return { top: '0%', left: '0%', objectPosition: '0% 0%' };
     } else if (w < 8) { 
-      return { top: '0%', left: '-100%' };
+      return { top: '0%', left: '-100%', objectPosition: '100% 0%' };
     } else if (w < 14) { 
-      return { top: '-100%', left: '0%' };
+      return { top: '-100%', left: '0%', objectPosition: '0% 100%' };
     } else { 
-      return { top: '-100%', left: '-100%' };
+      return { top: '-100%', left: '-100%', objectPosition: '100% 100%' };
     }
   };
 
