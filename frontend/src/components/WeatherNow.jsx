@@ -108,6 +108,19 @@ function WeatherNow({ data, location, dataSource }) {
     return descriptions[c] || 'N/A';
   };
 
+  const getSeaStateStyle = (windSpeed) => {
+    const w = parseFloat(windSpeed);
+    if (isNaN(w) || w < 4) { 
+      return { backgroundPosition: '0% 0%', backgroundSize: '200% 200%' };
+    } else if (w < 8) { 
+      return { backgroundPosition: '100% 0%', backgroundSize: '200% 200%' };
+    } else if (w < 14) { 
+      return { backgroundPosition: '0% 100%', backgroundSize: '200% 200%' };
+    } else { 
+      return { backgroundPosition: '100% 100%', backgroundSize: '200% 200%' };
+    }
+  };
+
   return (
     <div>
       <div className="weather-header">
@@ -201,6 +214,25 @@ function WeatherNow({ data, location, dataSource }) {
         </div>
 
       </div>
+
+      {isValid(wind) && (
+        <div className="info-card no-hover" style={{ marginTop: '15px', padding: 0, overflow: 'hidden', width: '100%', cursor: 'default' }}>
+          <div style={{ padding: '15px 15px 10px 15px', fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            Illustrativ Havsutsikt
+          </div>
+          <div style={{ padding: '0 15px 15px 15px' }}>
+            <div style={{
+              width: '100%',
+              height: '180px',
+              backgroundImage: 'url(/vind_hav_illu.jpg)',
+              borderRadius: '8px',
+              boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)',
+              ...getSeaStateStyle(wind)
+            }} />
+          </div>
+        </div>
+      )}
+
       <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
         Uppdaterat: {data.referenceTime ? new Date(data.referenceTime).toLocaleString('sv-SE') : 'Okänt'}
       </div>
