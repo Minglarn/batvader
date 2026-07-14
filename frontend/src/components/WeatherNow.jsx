@@ -124,16 +124,32 @@ function WeatherNow({ data, location, dataSource }) {
 
   return (
     <div>
-      <div className="weather-header">
-        <div className="temp-large" style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
-          <div style={{ color: getTempColor(temp) }}>
-            {isValid(temp) ? `${temp}` : 'N/A'}
-            {isValid(temp) && <span style={{ fontSize: '2rem' }}>°C</span>}
+      <div className="weather-header" style={{ position: 'relative', overflow: 'hidden', padding: '20px', borderRadius: '8px', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)', marginBottom: '20px' }}>
+        {isValid(wind) && (
+          <img 
+            src={seaImg} 
+            alt="Havsutsikt bakgrund"
+            style={{
+              position: 'absolute',
+              width: '200%',
+              height: '200%',
+              objectFit: 'cover',
+              zIndex: 0,
+              opacity: 0.5,
+              ...getSeaStateStyle(wind)
+            }}
+          />
+        )}
+        <div style={{ position: 'relative', zIndex: 1, width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="temp-large" style={{ display: 'flex', alignItems: 'baseline', gap: '15px', textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
+            <div style={{ color: getTempColor(temp) }}>
+              {isValid(temp) ? `${temp}` : 'N/A'}
+              {isValid(temp) && <span style={{ fontSize: '2rem' }}>°C</span>}
+            </div>
           </div>
-
-        </div>
-        <div className="weather-icon-container">
-          <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={data.timeSeries[0].time} lat={location?.lat} lon={location?.lon} />
+          <div className="weather-icon-container" style={{ filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.6))' }}>
+            <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={data.timeSeries[0].time} lat={location?.lat} lon={location?.lon} />
+          </div>
         </div>
       </div>
       <div className="info-grid">
@@ -216,35 +232,7 @@ function WeatherNow({ data, location, dataSource }) {
 
       </div>
 
-      {isValid(wind) && (
-        <div className="info-card no-hover" style={{ marginTop: '15px', padding: 0, overflow: 'hidden', width: '100%', cursor: 'default' }}>
-          <div style={{ padding: '15px 15px 10px 15px', fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            Illustrativ Havsutsikt
-          </div>
-          <div style={{ padding: '0 15px 15px 15px', width: '100%', boxSizing: 'border-box' }}>
-            <div style={{
-              width: '100%',
-              height: '180px',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              position: 'relative',
-              boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)',
-            }}>
-              <img 
-                src={seaImg} 
-                alt="Havsutsikt baserad på vind"
-                style={{
-                  position: 'absolute',
-                  width: '200%',
-                  height: '200%',
-                  objectFit: 'cover',
-                  ...getSeaStateStyle(wind)
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+
 
       <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
         Uppdaterat: {data.referenceTime ? new Date(data.referenceTime).toLocaleString('sv-SE') : 'Okänt'}
