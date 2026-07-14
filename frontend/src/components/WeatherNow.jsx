@@ -111,13 +111,13 @@ function WeatherNow({ data, location, dataSource }) {
   const getSeaStateStyle = (windSpeed) => {
     const w = parseFloat(windSpeed);
     if (isNaN(w) || w < 4) { 
-      return { backgroundPosition: '0% 0%', backgroundSize: '200% 200%' };
+      return { top: '0%', left: '0%' };
     } else if (w < 8) { 
-      return { backgroundPosition: '100% 0%', backgroundSize: '200% 200%' };
+      return { top: '0%', left: '-100%' };
     } else if (w < 14) { 
-      return { backgroundPosition: '0% 100%', backgroundSize: '200% 200%' };
+      return { top: '-100%', left: '0%' };
     } else { 
-      return { backgroundPosition: '100% 100%', backgroundSize: '200% 200%' };
+      return { top: '-100%', left: '-100%' };
     }
   };
 
@@ -224,11 +224,23 @@ function WeatherNow({ data, location, dataSource }) {
             <div style={{
               width: '100%',
               height: '180px',
-              backgroundImage: 'url(/vind_hav_illu.jpg)',
               borderRadius: '8px',
+              overflow: 'hidden',
+              position: 'relative',
               boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)',
-              ...getSeaStateStyle(wind)
-            }} />
+            }}>
+              <img 
+                src="/vind_hav_illu.jpg" 
+                alt="Havsutsikt baserad på vind"
+                style={{
+                  position: 'absolute',
+                  width: '200%',
+                  height: '200%',
+                  objectFit: 'cover',
+                  ...getSeaStateStyle(wind)
+                }}
+              />
+            </div>
           </div>
         </div>
       )}
