@@ -221,7 +221,7 @@ function WeatherNow({ data, location, dataSource }) {
           <div style={{ padding: '15px 15px 10px 15px', fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Illustrativ Havsutsikt
           </div>
-          <div style={{ padding: '0 15px 15px 15px' }}>
+          <div style={{ padding: '0 15px 15px 15px', width: '100%', boxSizing: 'border-box' }}>
             <div style={{
               width: '100%',
               height: '180px',
