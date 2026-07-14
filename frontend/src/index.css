@@ -706,15 +706,3 @@ h1 {
   color: var(--text-primary);
 }
 
-/* Glassmorphism for modal in Ocean theme */
-.theme-ocean .modal-content {
-  background-color: rgba(15, 20, 30, 0.7);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Let the info cards inside the modal have a bit more contrast in Ocean theme */
-.theme-ocean .modal-content .info-card {
-  background-color: rgba(255, 255, 255, 0.05);
-}
