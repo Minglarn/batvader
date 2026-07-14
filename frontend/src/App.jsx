@@ -229,7 +229,7 @@ function App() {
             const bf = isNaN(w) ? '' : w < 0.3 ? 'Lugnt' : w < 3.4 ? 'Svag vind' : w < 8.0 ? 'Måttlig vind' : w < 13.9 ? 'Frisk vind' : w < 17.2 ? 'Styv kuling' : w < 20.8 ? 'Hård kuling' : w < 24.5 ? 'Halv storm' : w < 32.7 ? 'Storm' : 'Orkan';
             return (
               <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', letterSpacing: '1px' }}>
-                {descs[sc] || ''} &middot; {bf} {ws !== '-' ? `${ws} m/s` : ''}
+                {descs[sc] || ''}
               </span>
             );
           })()}
