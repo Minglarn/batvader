@@ -57,9 +57,9 @@ function WeatherNow({ data, location, dataSource }) {
   const waterStation = data.water_level?.station;
   // Temperaturfärg: blå (kallt) -> grön (svalt) -> gul -> orange -> röd (hett)
   const getTempColor = (val) => {
-    if (!isValid(val)) return 'var(--text-primary)';
+    if (!isValid(val)) return '#ffffff';
     const t = parseFloat(val);
-    if (isNaN(t)) return 'var(--text-primary)';
+    if (isNaN(t)) return '#ffffff';
     if (t <= -10) return '#8ecae6';    // Isblå
     if (t <= 0)   return '#48cae4';    // Ljusblå
     if (t <= 5)   return '#00b4d8';    // Blå
@@ -168,7 +168,7 @@ function WeatherNow({ data, location, dataSource }) {
       <div className="info-grid">
         <div className="info-card">
           <div className="info-card-title">Vindhastighet</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: 'var(--text-primary)'}}>
+          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>
             {isValid(wind) ? wind : 'N/A'}{isValid(wind) && <span style={{fontSize: '1rem'}}>m/s</span>}
           </div>
           <div className="info-card-subtext">{getBeaufortScale(wind)}</div>
@@ -176,19 +176,19 @@ function WeatherNow({ data, location, dataSource }) {
         
         <div className="info-card">
           <div className="info-card-title">Byvind</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: 'var(--text-primary)'}}>{isValid(gust) ? gust : 'N/A'}{isValid(gust) && <span style={{fontSize: '1rem'}}>m/s</span>}</div>
+          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>{isValid(gust) ? gust : 'N/A'}{isValid(gust) && <span style={{fontSize: '1rem'}}>m/s</span>}</div>
           <div className="info-card-subtext">{getGustScale(gust)}</div>
         </div>
         
         <div className="info-card">
           <div className="info-card-title">Nederbörd</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: 'var(--text-primary)'}}>{isValid(precip) ? precip : 'N/A'}{isValid(precip) && <span style={{fontSize: '1rem'}}>mm</span>}</div>
+          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>{isValid(precip) ? precip : 'N/A'}{isValid(precip) && <span style={{fontSize: '1rem'}}>mm</span>}</div>
           <div className="info-card-subtext">{isValid(precip) ? (precip > 0 ? 'Regn' : 'Uppehåll') : 'N/A'}</div>
         </div>
         
         <div className="info-card">
           <div className="info-card-title">Vågor</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: 'var(--text-primary)'}}>
+          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>
             {isValid(waveHeight) ? waveHeight : 'N/A'}{isValid(waveHeight) && <span style={{fontSize: '1rem'}}>m</span>}
           </div>
           <div className="info-card-subtext">{isValid(waveHeight) ? (parseFloat(waveHeight) < 0.5 ? 'Lugnt vatten' : parseFloat(waveHeight) < 1.5 ? 'Lätt sjögång' : 'Hög sjögång') : 'N/A'}</div>
@@ -196,7 +196,7 @@ function WeatherNow({ data, location, dataSource }) {
         
         <div className="info-card">
           <div className="info-card-title">Lufttryck</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: 'var(--text-primary)'}}>
+          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>
             {isValid(pressure) ? pressure : 'N/A'}
           </div>
           <div className="info-card-subtext">{isValid(pressure) ? 'hPa' : ''}</div>
@@ -212,7 +212,7 @@ function WeatherNow({ data, location, dataSource }) {
 
         <div className="info-card">
           <div className="info-card-title">Vattenstånd</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: waterLevel !== undefined && waterLevel !== null ? (waterLevel > 0 ? '#48cae4' : waterLevel < 0 ? '#ef233c' : 'var(--text-primary)') : 'var(--text-primary)'}}>
+          <div className="info-card-value" style={{marginTop: 'auto', color: waterLevel !== undefined && waterLevel !== null ? (waterLevel > 0 ? '#48cae4' : waterLevel < 0 ? '#ef233c' : '#ffffff') : '#ffffff'}}>
             {waterLevel !== undefined && waterLevel !== null ? (waterLevel > 0 ? `+${waterLevel}` : waterLevel) : 'N/A'}
             {waterLevel !== undefined && waterLevel !== null && <span style={{fontSize: '1rem'}}> cm</span>}
           </div>
@@ -223,7 +223,7 @@ function WeatherNow({ data, location, dataSource }) {
 
         <div className="info-card">
           <div className="info-card-title">Risk för åska</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: 'var(--text-primary)'}}>
+          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>
              {isValid(thunder) ? thunder : 'N/A'}{isValid(thunder) && <span style={{fontSize: '1rem'}}> %</span>}
           </div>
           <div className="info-card-subtext">{isValid(thunder) ? (parseFloat(thunder) > 50 ? 'Hög risk' : parseFloat(thunder) > 10 ? 'Viss risk' : 'Låg risk') : 'N/A'}</div>
@@ -231,13 +231,13 @@ function WeatherNow({ data, location, dataSource }) {
 
         <div className="info-card">
           <div className="info-card-title">Sikt</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: 'var(--text-primary)'}}>{isValid(visibility) ? visibility : 'N/A'}{isValid(visibility) && <span style={{fontSize: '1rem'}}>km</span>}</div>
+          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>{isValid(visibility) ? visibility : 'N/A'}{isValid(visibility) && <span style={{fontSize: '1rem'}}>km</span>}</div>
           <div className="info-card-subtext">{isValid(visibility) ? (visibility > 10 ? 'Mycket god sikt' : 'Dålig sikt') : 'N/A'}</div>
         </div>
 
         <div className="info-card">
           <div className="info-card-title">Vågriktning</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: 'var(--text-primary)'}}>
+          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>
             {isValid(waveDirection) ? <span style={{display: 'inline-block', transform: `rotate(${waveDirection}deg)`, fontSize: '2rem'}}>↓</span> : 'N/A'}
           </div>
           <div className="info-card-subtext">{isValid(waveDirection) ? `${Math.round(waveDirection)}°` : 'N/A'}</div>

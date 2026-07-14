@@ -48,9 +48,9 @@ function WeatherForecast({ data, location, dataSource }) {
 
   // Samma färgskala som i NU-fliken
   const getTempColor = (val) => {
-    if (!isValid(val)) return 'var(--text-primary)';
+    if (!isValid(val)) return '#ffffff';
     const t = parseFloat(val);
-    if (isNaN(t)) return 'var(--text-primary)';
+    if (isNaN(t)) return '#ffffff';
     if (t <= -10) return '#8ecae6';
     if (t <= 0)   return '#48cae4';
     if (t <= 5)   return '#00b4d8';
