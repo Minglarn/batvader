@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ToggleSwitch = ({ checked, onChange }) => (
   <div 
@@ -86,6 +86,15 @@ const SettingsRow = ({ title, description, control, hasBorder = true }) => (
 );
 
 const Settings = ({ theme, setTheme, dataSource, setDataSource }) => {
+  const [sysInfo, setSysInfo] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/sysinfo')
+      .then(res => res.json())
+      .then(data => setSysInfo(data))
+      .catch(err => console.error("Kunde inte hämta systeminfo", err));
+  }, []);
+
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       
@@ -147,6 +156,20 @@ const Settings = ({ theme, setTheme, dataSource, setDataSource }) => {
             />
           }
         />
+      </CollapsibleCard>
+
+      <CollapsibleCard title="Om Applikationen" defaultOpen={false}>
+        <div style={{ padding: '20px', fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+          {sysInfo ? (
+            <>
+              <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: 'var(--text-primary)' }}>Version (CalVer):</strong> {sysInfo.version}</p>
+              <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: 'var(--text-primary)' }}>Skapare:</strong> {sysInfo.creator}</p>
+              <p style={{ margin: '0' }}><strong style={{ color: 'var(--text-primary)' }}>Databasstorlek:</strong> {sysInfo.db_size_mb} MB</p>
+            </>
+          ) : (
+            <p style={{ margin: '0' }}>Laddar information...</p>
+          )}
+        </div>
       </CollapsibleCard>
 
     </div>

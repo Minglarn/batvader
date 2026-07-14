@@ -315,8 +315,8 @@ h1 {
 .info-card:nth-child(8) { animation-delay: 0.45s; }
 
 .info-card:not(.no-hover):hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   border-color: rgba(0, 229, 255, 0.5);
 }
 

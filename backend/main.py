@@ -553,3 +553,19 @@ def get_latest_plan(current_user: str = Depends(verify_token)):
             pass
     return {}
 
+@app.get("/api/sysinfo")
+def get_sysinfo():
+    import os
+    db_path = "/app/data/weather.db"
+    if not os.path.exists(db_path):
+        db_path = "weather.db"
+    
+    size_mb = 0
+    if os.path.exists(db_path):
+        size_mb = os.path.getsize(db_path) / (1024 * 1024)
+        
+    return {
+        "version": "2026.07.14",
+        "creator": "Sonat Böler",
+        "db_size_mb": round(size_mb, 2)
+    }
