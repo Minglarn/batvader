@@ -134,28 +134,9 @@ function WeatherForecast({ data, location, dataSource }) {
       </div>
 
       {selectedHour && (
-        <div className="modal-overlay" style={{
-          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
-          backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 1000, 
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '20px', backdropFilter: 'blur(5px)'
-        }} onClick={() => setSelectedHour(null)}>
-          <div className="modal-content" style={{
-            backgroundColor: 'var(--bg-surface)', 
-            borderRadius: '15px', 
-            padding: '20px', 
-            width: '100%', 
-            maxWidth: '1000px',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            border: '1px solid var(--border-color)',
-            position: 'relative'
-          }} onClick={e => e.stopPropagation()}>
-            <button style={{
-              position: 'absolute', top: '15px', right: '15px', 
-              background: 'none', border: 'none', color: 'var(--text-secondary)',
-              fontSize: '2rem', cursor: 'pointer', lineHeight: 1, zIndex: 10
-            }} onClick={() => setSelectedHour(null)}>×</button>
+        <div className="modal-overlay" onClick={() => setSelectedHour(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => setSelectedHour(null)}>×</button>
             <h2 style={{marginTop: 0, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center'}}>
               {new Date(selectedHour.time).toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}
             </h2>
