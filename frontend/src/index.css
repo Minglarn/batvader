@@ -676,6 +676,7 @@ h1 {
 
 .modal-content {
   background-color: var(--bg-surface);
+  color: var(--text-primary);
   border-radius: 15px;
   padding: 20px;
   width: 100%;
