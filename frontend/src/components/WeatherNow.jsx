@@ -4,6 +4,9 @@ import imgLungt from '../assets/lungt.jpg';
 import imgSvagVind from '../assets/svag_vind.jpg';
 import imgMattligVind from '../assets/mattlig_vind.jpg';
 import imgFriskVind from '../assets/frisk_vind.jpg';
+import imgHardVind from '../assets/hard_vind.jpg';
+import imgStormVind from '../assets/storm_vind.jpg';
+import imgOrkanVind from '../assets/orkan_vind.jpg';
 
 function WeatherNow({ data, location, dataSource }) {
   if (!data || data.error) return <h1>INGEN DATA TILLGÄNGLIG</h1>;
@@ -120,8 +123,14 @@ function WeatherNow({ data, location, dataSource }) {
       return imgSvagVind;
     } else if (w < 8.0) { 
       return imgMattligVind;
-    } else { 
+    } else if (w < 13.9) { 
       return imgFriskVind;
+    } else if (w < 24.5) {
+      return imgHardVind;
+    } else if (w < 32.7) {
+      return imgStormVind;
+    } else {
+      return imgOrkanVind;
     }
   };
 
