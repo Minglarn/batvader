@@ -1,5 +1,6 @@
 import React from 'react';
 import WeatherIcon from './WeatherIcon';
+import seaImg from '../assets/vind_hav_illu.jpg';
 
 function WeatherNow({ data, location, dataSource }) {
   if (!data || data.error) return <h1>INGEN DATA TILLGÄNGLIG</h1>;
@@ -230,7 +231,7 @@ function WeatherNow({ data, location, dataSource }) {
               boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)',
             }}>
               <img 
-                src="/vind_hav_illu.jpg" 
+                src={seaImg} 
                 alt="Havsutsikt baserad på vind"
                 style={{
                   position: 'absolute',
