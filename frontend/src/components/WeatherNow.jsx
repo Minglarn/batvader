@@ -1,6 +1,9 @@
 import React from 'react';
 import WeatherIcon from './WeatherIcon';
-import seaImg from '../assets/vind_hav_illu.jpg';
+import imgLungt from '../assets/lungt.jpg';
+import imgSvagVind from '../assets/svag_vind.jpg';
+import imgMattligVind from '../assets/mattlig_vind.jpg';
+import imgFriskVind from '../assets/frisk_vind.jpg';
 
 function WeatherNow({ data, location, dataSource }) {
   if (!data || data.error) return <h1>INGEN DATA TILLGÄNGLIG</h1>;
@@ -109,16 +112,16 @@ function WeatherNow({ data, location, dataSource }) {
     return descriptions[c] || 'N/A';
   };
 
-  const getSeaStateStyle = (windSpeed) => {
+  const getSeaStateImage = (windSpeed) => {
     const w = parseFloat(windSpeed);
-    if (isNaN(w) || w < 4) { 
-      return { top: '0%', left: '0%', objectPosition: '0% 0%' };
-    } else if (w < 8) { 
-      return { top: '0%', left: '-100%', objectPosition: '100% 0%' };
-    } else if (w < 14) { 
-      return { top: '-100%', left: '0%', objectPosition: '0% 100%' };
+    if (isNaN(w) || w < 0.3) { 
+      return imgLungt;
+    } else if (w < 3.4) { 
+      return imgSvagVind;
+    } else if (w < 8.0) { 
+      return imgMattligVind;
     } else { 
-      return { top: '-100%', left: '-100%', objectPosition: '100% 100%' };
+      return imgFriskVind;
     }
   };
 
@@ -127,16 +130,17 @@ function WeatherNow({ data, location, dataSource }) {
       <div className="weather-header" style={{ position: 'relative', overflow: 'hidden', padding: '20px', borderRadius: '8px', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)', marginBottom: '20px' }}>
         {isValid(wind) && (
           <img 
-            src={seaImg} 
+            src={getSeaStateImage(wind)} 
             alt="Havsutsikt bakgrund"
             style={{
               position: 'absolute',
-              width: '200%',
-              height: '200%',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
               objectFit: 'cover',
               zIndex: 0,
-              opacity: 0.5,
-              ...getSeaStateStyle(wind)
+              opacity: 0.5
             }}
           />
         )}
