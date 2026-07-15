@@ -212,7 +212,7 @@ function App() {
                   const mValid = vMETEO !== undefined && vMETEO !== null && !isNaN(vMETEO);
                   if (sValid && mValid) {
                     // Symbol code should not be averaged, return SMHI
-                    if (name === 'symbol_code') return vSMHI;
+                    if (name === 'symbol_code') return Math.max(vSMHI, vMETEO);
                     const avg = (parseFloat(vSMHI) + parseFloat(vMETEO)) / 2;
                     return Math.round(avg * 10) / 10;
                   }

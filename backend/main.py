@@ -59,6 +59,21 @@ def get_location_name(lat: float, lon: float):
         print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Nominatim reverse geocoding misslyckades: {e}", flush=True)
     return "Okänd plats"
 
+def map_meteo_symbol(sym: str) -> int:
+    if not sym: return 1
+    s = sym.split('_')[0]
+    mapping = {
+        'clearsky': 1, 'fair': 2, 'partlycloudy': 3, 'cloudy': 5,
+        'rainshowers': 9, 'rainshowersandthunder': 11, 'sleetshowers': 13,
+        'snowshowers': 16, 'rain': 19, 'heavyrain': 20,
+        'heavyrainandthunder': 21, 'sleet': 23, 'snow': 26,
+        'heavysnow': 27, 'fog': 7, 'lightrainshowers': 8,
+        'heavyrainshowers': 10, 'lightsleetshowers': 12, 'heavysleetshowers': 14,
+        'lightsnowshowers': 15, 'heavysnowshowers': 17, 'lightrain': 18,
+        'lightsleet': 22, 'heavysleet': 24, 'lightsnow': 25,
+    }
+    return mapping.get(s, 1)
+
 def fetch_weather_data(lat: float, lon: float):
     lat_str = f"{lat:.4f}"
     lon_str = f"{lon:.4f}"
@@ -111,9 +126,13 @@ def fetch_weather_data(lat: float, lon: float):
                 if "time" in item:
                     details = item.get("data", {}).get("instant", {}).get("details", {})
                     precip = None
-                    next_1 = item.get("data", {}).get("next_1_hours", {}).get("details", {})
-                    if "precipitation_amount" in next_1:
-                        precip = next_1["precipitation_amount"]
+                    next_1 = item.get("data", {}).get("next_1_hours", {})
+                    n1_details = next_1.get("details", {})
+                    if "precipitation_amount" in n1_details:
+                        precip = n1_details["precipitation_amount"]
+                        
+                    sym_code_str = next_1.get("summary", {}).get("symbol_code")
+                    meteo_sym = map_meteo_symbol(sym_code_str) if sym_code_str else None
                         
                     loc_map[item["time"]] = {
                         "meteo_air_temperature": details.get("air_temperature"),
@@ -123,7 +142,8 @@ def fetch_weather_data(lat: float, lon: float):
                         "meteo_air_pressure_at_mean_sea_level": details.get("air_pressure_at_sea_level"),
                         "meteo_cloud_area_fraction": details.get("cloud_area_fraction"),
                         "meteo_wind_from_direction": details.get("wind_from_direction"),
-                        "meteo_precipitation_amount_mean": precip
+                        "meteo_precipitation_amount_mean": precip,
+                        "meteo_symbol_code": meteo_sym
                     }
             for hour in smhi_data.get("timeSeries", []):
                 t = hour.get("time")

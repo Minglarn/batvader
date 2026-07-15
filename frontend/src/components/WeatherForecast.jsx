@@ -31,7 +31,7 @@ function WeatherForecast({ data, location, dataSource }) {
         const sValid = vSMHI !== undefined && vSMHI !== null && !isNaN(vSMHI);
         const mValid = vMETEO !== undefined && vMETEO !== null && !isNaN(vMETEO);
         if (sValid && mValid) {
-          if (name === 'symbol_code') return vSMHI;
+          if (name === 'symbol_code') return Math.max(vSMHI, vMETEO);
           const avg = (parseFloat(vSMHI) + parseFloat(vMETEO)) / 2;
           return Math.round(avg * 10) / 10;
         }
