@@ -146,6 +146,26 @@ function WeatherNow({ data, location, dataSource }) {
     }
   };
 
+  const isRain = (code) => {
+    const c = parseInt(code, 10);
+    return [8,9,10,11,12,13,14,18,19,20,22,23,24].includes(c);
+  };
+  const isSnow = (code) => {
+    const c = parseInt(code, 10);
+    return [15,16,17,25,26,27].includes(c);
+  };
+  
+  const getPrecipText = (p, sym) => {
+    if (!isValid(p)) return 'N/A';
+    if (parseFloat(p) > 0) {
+      if (isSnow(sym)) return 'Snöfall';
+      return 'Regn';
+    }
+    if (isSnow(sym)) return 'Lätt snöfall';
+    if (isRain(sym)) return 'Lätt regn';
+    return 'Uppehåll';
+  };
+
   return (
     <div>
       <div className="weather-header" style={{ position: 'relative', overflow: 'hidden', padding: '20px', borderRadius: '8px', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)', marginBottom: '20px' }}>
@@ -194,8 +214,11 @@ function WeatherNow({ data, location, dataSource }) {
         
         <div className="info-card">
           <div className="info-card-title">Nederbörd</div>
-          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>{isValid(precip) ? precip : 'N/A'}{isValid(precip) && <span style={{fontSize: '1rem'}}>mm</span>}</div>
-          <div className="info-card-subtext">{isValid(precip) ? (precip > 0 ? 'Regn' : 'Uppehåll') : 'N/A'}</div>
+          <div className="info-card-value" style={{marginTop: 'auto', color: '#ffffff'}}>
+            {isValid(precip) ? (parseFloat(precip) === 0 && isRain(symbolCode) ? '< 0.2' : precip) : 'N/A'}
+            {isValid(precip) && <span style={{fontSize: '1rem'}}>mm</span>}
+          </div>
+          <div className="info-card-subtext">{getPrecipText(precip, symbolCode)}</div>
         </div>
         
         <div className="info-card">
