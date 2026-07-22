@@ -115,8 +115,20 @@ function WeatherNow({ data, location, dataSource }) {
     return descriptions[c] || 'N/A';
   };
 
-  const getSeaStateImage = (windSpeed) => {
+  const getSeaStateImage = (wave, windSpeed) => {
+    const wh = parseFloat(wave);
     const w = parseFloat(windSpeed);
+    
+    if (!isNaN(wh)) {
+      if (wh < 0.3) return imgLungt;
+      if (wh < 0.5) return imgSvagVind;
+      if (wh < 1.25) return imgMattligVind;
+      if (wh < 2.5) return imgFriskVind;
+      if (wh < 4.0) return imgHardVind;
+      if (wh < 9.0) return imgStormVind;
+      return imgOrkanVind;
+    }
+
     if (isNaN(w) || w < 0.3) { 
       return imgLungt;
     } else if (w < 3.4) { 
@@ -137,9 +149,9 @@ function WeatherNow({ data, location, dataSource }) {
   return (
     <div>
       <div className="weather-header" style={{ position: 'relative', overflow: 'hidden', padding: '20px', borderRadius: '8px', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)', marginBottom: '20px' }}>
-        {isValid(wind) && (
+        {(isValid(waveHeight) || isValid(wind)) && (
           <img 
-            src={getSeaStateImage(wind)} 
+            src={getSeaStateImage(waveHeight, wind)} 
             alt="Havsutsikt bakgrund"
             style={{
               position: 'absolute',
