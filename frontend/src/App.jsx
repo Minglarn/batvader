@@ -6,6 +6,7 @@ import WeatherBackground from './components/WeatherBackground';
 import Settings from './components/Settings';
 import WeatherForecast from './components/WeatherForecast';
 import Login from './components/Login';
+import packageInfo from '../package.json';
 
 const DEFAULT_LAT = 58.8986;
 const DEFAULT_LON = 17.5504;
@@ -275,8 +276,9 @@ function App() {
             {activeTab === 'PROGNOS' && <WeatherForecast data={weatherData} location={location} dataSource={dataSource} />}
             {activeTab === 'PLANERA' && <TripPlanner data={weatherData} location={location} dataSource={dataSource} />}
             {activeTab === 'INSTÄLLNINGAR' && <Settings theme={theme} setTheme={setTheme} dataSource={dataSource} setDataSource={setDataSource} />}
-            <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem' }}>
-              Väderdata: {dataSource === 'smhi' ? 'SMHI' : dataSource === 'meteo' ? 'MET Norway' : 'SMHI & MET Norway'} | Havsdata: MET Norway
+            <footer style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', fontSize: '0.8rem', opacity: 0.7 }}>
+              Väderdata: {dataSource === 'smhi' ? 'SMHI' : dataSource === 'meteo' ? 'MET Norway' : 'SMHI & MET Norway'} | Havsdata: MET Norway<br/>
+              v{packageInfo.version}
             </footer>
           </>
         )}
