@@ -1,7 +1,7 @@
 {
   "name": "temp_frontend",
   "private": true,
-  "version": "2026.07.23.2",
+  "version": "2026.07.23.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
