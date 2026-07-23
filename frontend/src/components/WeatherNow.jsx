@@ -10,6 +10,13 @@ import imgOrkanVind from '../assets/orkan_vind.jpg';
 
 function WeatherNow({ data, location, dataSource }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState('');
+
+  const changeIndex = (newIndex) => {
+    if (newIndex > currentIndex) setSlideDirection('slide-next');
+    else if (newIndex < currentIndex) setSlideDirection('slide-prev');
+    setCurrentIndex(newIndex);
+  };
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -36,10 +43,10 @@ function WeatherNow({ data, location, dataSource }) {
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe && currentIndex < data.timeSeries.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+      changeIndex(currentIndex + 1);
     }
     if (isRightSwipe && currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
+      changeIndex(currentIndex - 1);
     }
   };
 
@@ -215,7 +222,7 @@ function WeatherNow({ data, location, dataSource }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', padding: '0 5px' }}>
         <button 
-          onClick={() => setCurrentIndex(prev => prev - 1)} 
+          onClick={() => changeIndex(currentIndex - 1)} 
           disabled={currentIndex === 0}
           style={{ background: 'none', border: 'none', color: currentIndex === 0 ? 'rgba(255,255,255,0.2)' : 'var(--accent)', fontSize: '1.5rem', cursor: 'pointer', padding: '10px' }}
         >
@@ -230,7 +237,7 @@ function WeatherNow({ data, location, dataSource }) {
           </div>
         </div>
         <button 
-          onClick={() => setCurrentIndex(prev => prev + 1)} 
+          onClick={() => changeIndex(currentIndex + 1)} 
           disabled={currentIndex >= data.timeSeries.length - 1}
           style={{ background: 'none', border: 'none', color: currentIndex >= data.timeSeries.length - 1 ? 'rgba(255,255,255,0.2)' : 'var(--accent)', fontSize: '1.5rem', cursor: 'pointer', padding: '10px' }}
         >
@@ -238,7 +245,8 @@ function WeatherNow({ data, location, dataSource }) {
         </button>
       </div>
 
-      <div className="weather-header" style={{ position: 'relative', overflow: 'hidden', padding: '20px', borderRadius: '8px', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)', marginBottom: '20px' }}>
+      <div key={currentIndex} className={slideDirection} style={{ animationDuration: '0.3s' }}>
+        <div className="weather-header" style={{ position: 'relative', overflow: 'hidden', padding: '20px', borderRadius: '8px', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)', marginBottom: '20px' }}>
         {(isValid(waveHeight) || isValid(wind)) && (
           <img 
             src={getSeaStateImage(waveHeight, wind)} 
@@ -351,6 +359,8 @@ function WeatherNow({ data, location, dataSource }) {
       </div>
 
 
+
+      </div>
 
       <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
         Uppdaterat: {data.referenceTime ? new Date(data.referenceTime).toLocaleString('sv-SE') : 'Okänt'}
