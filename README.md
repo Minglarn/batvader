@@ -1,5 +1,10 @@
 # Båtväder
 
+<div style="display: flex; gap: 10px;">
+  <img src="screenshot_1.jpg" alt="Screenshot 1" width="45%" />
+  <img src="screenshot_2.jpg" alt="Screenshot 2" width="45%" />
+</div>
+
 > [!WARNING]
 > **Pre-release:** Detta är en tidig version av applikationen. Den är under aktiv utveckling och kommer med all sannolikhet att innehålla buggar och ofullständiga funktioner.
 
