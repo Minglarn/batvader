@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import WeatherIcon from './WeatherIcon';
 import imgLungt from '../assets/lungt.jpg';
 import imgSvagVind from '../assets/svag_vind.jpg';
@@ -9,11 +9,47 @@ import imgStormVind from '../assets/storm_vind.jpg';
 import imgOrkanVind from '../assets/orkan_vind.jpg';
 
 function WeatherNow({ data, location, dataSource }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [data?.referenceTime]);
+
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && currentIndex < data.timeSeries.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    }
+    if (isRightSwipe && currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+    }
+  };
+
   if (!data || data.error) return <h1>INGEN DATA TILLGÄNGLIG</h1>;
   
+  const currentData = data.timeSeries[currentIndex] || data.timeSeries[0];
+
   const getParam = (name) => {
     try {
-      const d = data.timeSeries[0].data;
+      const d = currentData.data;
       const vSMHI = d[name];
       const vMETEO = d['meteo_' + name];
       
@@ -166,8 +202,42 @@ function WeatherNow({ data, location, dataSource }) {
     return 'Uppehåll';
   };
 
+  const currentTimeObj = new Date(currentData.time);
+  const timeString = currentTimeObj.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+  const dateString = currentTimeObj.toLocaleDateString('sv-SE', { weekday: 'short', month: 'short', day: 'numeric' });
+
   return (
-    <div>
+    <div 
+      onTouchStart={onTouchStart} 
+      onTouchMove={onTouchMove} 
+      onTouchEnd={onTouchEnd}
+      style={{ userSelect: 'none' }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', padding: '0 5px' }}>
+        <button 
+          onClick={() => setCurrentIndex(prev => prev - 1)} 
+          disabled={currentIndex === 0}
+          style={{ background: 'none', border: 'none', color: currentIndex === 0 ? 'rgba(255,255,255,0.2)' : 'var(--accent)', fontSize: '1.5rem', cursor: 'pointer', padding: '10px' }}
+        >
+          &larr;
+        </button>
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ margin: 0, color: 'var(--text-primary)', textTransform: 'uppercase', fontSize: '1.5rem', letterSpacing: '2px' }}>
+            {timeString}
+          </h2>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
+            {dateString}
+          </div>
+        </div>
+        <button 
+          onClick={() => setCurrentIndex(prev => prev + 1)} 
+          disabled={currentIndex >= data.timeSeries.length - 1}
+          style={{ background: 'none', border: 'none', color: currentIndex >= data.timeSeries.length - 1 ? 'rgba(255,255,255,0.2)' : 'var(--accent)', fontSize: '1.5rem', cursor: 'pointer', padding: '10px' }}
+        >
+          &rarr;
+        </button>
+      </div>
+
       <div className="weather-header" style={{ position: 'relative', overflow: 'hidden', padding: '20px', borderRadius: '8px', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)', marginBottom: '20px' }}>
         {(isValid(waveHeight) || isValid(wind)) && (
           <img 
@@ -193,7 +263,7 @@ function WeatherNow({ data, location, dataSource }) {
             </div>
           </div>
           <div className="weather-icon-container" style={{ filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.6))' }}>
-            <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={data.timeSeries[0].time} lat={location?.lat} lon={location?.lon} />
+            <WeatherIcon symbolCode={symbolCode} windSpeed={wind} windDir={windDirDeg} time={currentData.time} lat={location?.lat} lon={location?.lon} />
           </div>
         </div>
       </div>
